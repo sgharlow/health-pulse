@@ -4,6 +4,7 @@ import os
 from typing import Any
 
 from healthpulse_mcp.analytics import detect_anomalies
+from healthpulse_mcp.cache import BRIEFING_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_facility_ids, validate_state
 
@@ -23,9 +24,16 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             include_equity (bool): Include equity analysis (default True)
 
     Returns:
-        dict with summary_stats, top_anomalies, care_gaps, equity_summary (optional),
-        suggested_prompt, filters
+        dict with summary_stats, anomalies, care_gaps, top_performers,
+        bottom_performers, equity_flags (optional), equity_summary (optional),
+        suggested_prompt, filters, clinical_context
     """
+    # --- Cache check (1-hour TTL for executive briefing) ---
+    cache_key = tool_cache.make_key("executive_briefing", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
     quality_id = os.environ.get("HP_QUALITY_DATASET_ID")
     readmissions_id = os.environ.get("HP_READMISSIONS_DATASET_ID")
@@ -65,7 +73,8 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     # --- Facilities: count + avg star rating (actual column: hospital_overall_rating) ---
     try:
         fac_sql = (
-            f"SELECT facility_id, hospital_overall_rating, state "
+            f"SELECT facility_id, facility_name, hospital_overall_rating, "
+            f"hospital_type, state, county_fips "
             f"FROM table {fac_where}"
         )
         fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
@@ -74,14 +83,26 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
 
     total_facilities = len(fac_rows)
     ratings = []
+    rated_facilities: list[dict[str, Any]] = []
     for row in fac_rows:
         try:
             r = float(row.get("hospital_overall_rating", 0) or 0)
             if r > 0:
                 ratings.append(r)
+                rated_facilities.append({
+                    "facility": row.get("facility_name"),
+                    "state": row.get("state"),
+                    "star_rating": int(r),
+                    "type": row.get("hospital_type"),
+                })
         except (ValueError, TypeError):
             pass
     avg_star_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
+
+    # --- Top / bottom performers by star rating ---
+    rated_facilities.sort(key=lambda x: x["star_rating"], reverse=True)
+    top_performers = rated_facilities[:5]
+    bottom_performers = sorted(rated_facilities, key=lambda x: x["star_rating"])[:5]
 
     # For state scope: derive quality_facility_ids from the facilities we just fetched
     if scope == "state" and state:
@@ -154,23 +175,61 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         "state": state,
     }
 
-    # --- Optional equity summary ---
+    # --- Optional equity summary + equity_flags ---
     equity_summary: dict[str, Any] | None = None
+    equity_flags: list[dict[str, Any]] = []
     if include_equity:
         community_id = os.environ.get("HP_COMMUNITY_DATASET_ID")
         if community_id:
             try:
                 svi_sql = "SELECT county_fips, svi_score FROM table"
                 svi_rows = domo.query_as_dicts(community_id, svi_sql)
-                high_svi_count = sum(
-                    1 for r in svi_rows
-                    if _safe_float(r.get("svi_score")) is not None
-                    and _safe_float(r.get("svi_score")) >= 0.75
-                )
+
+                # Build SVI lookup by county_fips
+                svi_by_fips: dict[str, float] = {}
+                high_svi_count = 0
+                for r in svi_rows:
+                    score = _safe_float(r.get("svi_score"))
+                    fips = str(r.get("county_fips", "") or "")
+                    if score is not None and fips:
+                        svi_by_fips[fips] = score
+                        if score >= 0.75:
+                            high_svi_count += 1
+
                 equity_summary = {
                     "high_vulnerability_counties": high_svi_count,
                     "total_counties_analyzed": len(svi_rows),
                 }
+
+                # Build per-facility equity flags by joining fac_rows with SVI
+                for fac in fac_rows:
+                    fips = str(fac.get("county_fips", "") or "")
+                    svi_score = svi_by_fips.get(fips)
+                    if svi_score is None:
+                        # Try zero-padded FIPS
+                        svi_score = svi_by_fips.get(fips.zfill(5))
+                    if svi_score is not None and svi_score >= 0.75:
+                        # Determine outcome gap from care_gaps
+                        fac_id = fac.get("facility_id")
+                        fac_care_gaps = [
+                            g for g in care_gaps if g.get("facility_id") == fac_id
+                        ]
+                        if fac_care_gaps:
+                            outcome_gap = (
+                                f"Excess readmission ratio "
+                                f"{fac_care_gaps[0]['excess_readmission_ratio']}"
+                            )
+                        else:
+                            outcome_gap = "No readmission gap detected"
+                        equity_flags.append({
+                            "facility": fac.get("facility_name"),
+                            "svi_score": round(svi_score, 4),
+                            "outcome_gap": outcome_gap,
+                        })
+                # Sort by SVI descending
+                equity_flags.sort(
+                    key=lambda x: x.get("svi_score", 0), reverse=True
+                )
             except Exception:
                 equity_summary = {"note": "Equity data unavailable"}
         else:
@@ -190,8 +249,10 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
 
     result: dict[str, Any] = {
         "summary_stats": summary_stats,
-        "top_anomalies": all_anomalies[:10],
+        "anomalies": all_anomalies[:10],
         "care_gaps": care_gaps[:10],
+        "top_performers": top_performers,
+        "bottom_performers": bottom_performers,
         "suggested_prompt": suggested_prompt,
         "filters": {
             "scope": scope,
@@ -225,7 +286,9 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
 
     if include_equity and equity_summary is not None:
         result["equity_summary"] = equity_summary
+        result["equity_flags"] = equity_flags
 
+    tool_cache.set(cache_key, result, BRIEFING_TTL)
     return result
 
 

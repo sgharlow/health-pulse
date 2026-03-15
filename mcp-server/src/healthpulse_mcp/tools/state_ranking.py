@@ -3,6 +3,7 @@
 import os
 from typing import Any
 
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 
 
@@ -12,6 +13,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     Computes a composite score from: avg star rating, % facilities worse than national,
     avg excess readmission ratio, and high-SVI facility proportion.
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("state_ranking", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     fac_id = os.environ.get("HP_FACILITIES_DATASET_ID")
     qual_id = os.environ.get("HP_QUALITY_DATASET_ID")
 
@@ -80,7 +87,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     else:
         rankings.sort(key=lambda x: x["composite_score"])
 
-    return {
+    result = {
         "rankings": rankings[:limit],
         "total_states": len(rankings),
         "order": order,
@@ -96,3 +103,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             ),
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
+    return result

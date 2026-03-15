@@ -1,0 +1,1963 @@
+{
+  "generated": "2026-03-15",
+  "total_patients": 100,
+  "facility_ids": [
+    "050454",
+    "050424",
+    "100007",
+    "100034",
+    "450289",
+    "450358",
+    "360180",
+    "140276",
+    "220071",
+    "330214"
+  ],
+  "patients": [
+    {
+      "patient_id": "460531b6-84a5-4cfb-85d0-d67fb760ac77",
+      "facility_id": "050454",
+      "name": "James White",
+      "age": 66,
+      "gender": "male",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Type 2 diabetes mellitus",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "stroke",
+        "hypertension"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "5361ec03-02eb-428b-bf18-0f85d7a07690",
+      "facility_id": "050424",
+      "name": "Sarah Anderson",
+      "age": 34,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Heart failure",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3ac69a52-d1c1-4291-9ee4-595277eef0dd",
+      "facility_id": "100007",
+      "name": "Kimberly Ramirez",
+      "age": 90,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Hypothyroidism",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "copd",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "cda4f09c-f290-439c-8040-0cd19fe74284",
+      "facility_id": "100034",
+      "name": "Charles Gonzalez",
+      "age": 30,
+      "gender": "male",
+      "conditions": [
+        "Heart failure"
+      ],
+      "cms_groups": [
+        "heart-failure"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "a6bcbf1f-8cf3-4f6e-8f43-8b0e947c37d3",
+      "facility_id": "450289",
+      "name": "Patricia Perez",
+      "age": 32,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "stroke"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "ecd5c68f-5f19-46f7-bcbd-0089fbcdb36c",
+      "facility_id": "450358",
+      "name": "Margaret Thompson",
+      "age": 25,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "History of myocardial infarction",
+        "Hypothyroidism",
+        "Diabetes mellitus",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "hypertension",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "07120538-bc5e-4ca9-8c7f-b39311f36f0e",
+      "facility_id": "360180",
+      "name": "Donna Jackson",
+      "age": 82,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Diabetes mellitus",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "ae2d6514-259c-4601-888d-d53c1ee2d7f8",
+      "facility_id": "140276",
+      "name": "Daniel Jackson",
+      "age": 41,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Hypothyroidism",
+        "Hypertensive disorder",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "a84554ac-4f10-44e2-8526-dda99acbff84",
+      "facility_id": "220071",
+      "name": "Mary Brown",
+      "age": 67,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Type 2 diabetes mellitus",
+        "Hypothyroidism",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "1ee772fc-a339-4c35-891c-2fcd74e70ca4",
+      "facility_id": "330214",
+      "name": "Emily Martin",
+      "age": 32,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "14848f94-1321-495d-8379-289f50ed53c8",
+      "facility_id": "050454",
+      "name": "Paul Davis",
+      "age": 80,
+      "gender": "male",
+      "conditions": [
+        "History of myocardial infarction",
+        "Hypothyroidism",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "6983635f-ea44-463f-a082-6e380cce5f86",
+      "facility_id": "050424",
+      "name": "Donald Davis",
+      "age": 66,
+      "gender": "male",
+      "conditions": [
+        "Pneumonia",
+        "Heart failure",
+        "Type 1 diabetes mellitus",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "ihd",
+        "pneumonia"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "66912d0f-233d-4890-a08e-f21bb58412b2",
+      "facility_id": "100007",
+      "name": "Mark Thompson",
+      "age": 68,
+      "gender": "male",
+      "conditions": [
+        "Heart failure",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "1a59c259-fc57-4f1f-bf1b-3f1f674c56a0",
+      "facility_id": "100034",
+      "name": "Donna Sanchez",
+      "age": 42,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Cerebrovascular accident",
+        "Hypertensive disorder",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "stroke",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "718416ac-fb96-4896-bfc9-b0d5c0806e76",
+      "facility_id": "450289",
+      "name": "Ashley Moore",
+      "age": 43,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "pneumonia"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "77f77ff6-e304-4f05-9ba7-b572eb6e2424",
+      "facility_id": "450358",
+      "name": "Ashley Brown",
+      "age": 85,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Hypothyroidism",
+        "Diabetes mellitus",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "c2011362-a40b-4f7c-b05f-eaac6cc7b171",
+      "facility_id": "360180",
+      "name": "Joseph Robinson",
+      "age": 67,
+      "gender": "male",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Diabetes mellitus",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "stroke"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "85306626-391d-40ad-930d-17dcfd6d70c0",
+      "facility_id": "140276",
+      "name": "Dorothy Lee",
+      "age": 51,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Heart failure",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "copd",
+        "ihd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "34327a04-a409-4e57-b20b-86de98a8fbe8",
+      "facility_id": "220071",
+      "name": "Patricia Miller",
+      "age": 67,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease"
+      ],
+      "cms_groups": [
+        "copd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "aa9682de-c223-478e-8dbf-f11fdad1258b",
+      "facility_id": "330214",
+      "name": "Dorothy Rodriguez",
+      "age": 90,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "History of myocardial infarction",
+        "Type 1 diabetes mellitus",
+        "Ischemic heart disease",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "5a5f26fb-ccd7-4f71-bc41-47ba59c034c8",
+      "facility_id": "050454",
+      "name": "Lisa Lee",
+      "age": 26,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "f2bb07d7-63d2-4997-ba4b-f43f96b7929b",
+      "facility_id": "050424",
+      "name": "Sandra Rodriguez",
+      "age": 31,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Chronic obstructive lung disease",
+        "Ischemic heart disease",
+        "Hypertensive disorder",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3b153d62-fdb5-4624-98ff-47aeabef57be",
+      "facility_id": "100007",
+      "name": "Karen White",
+      "age": 60,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Disorder of lung",
+        "Type 2 diabetes mellitus",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "bbf3fa5c-a000-4919-99f6-211e4eddd463",
+      "facility_id": "100034",
+      "name": "Emily White",
+      "age": 26,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Cerebrovascular accident",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "stroke",
+        "hypertension"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "bafd2ce8-0641-47c8-925a-27fdad095123",
+      "facility_id": "450289",
+      "name": "Elizabeth Brown",
+      "age": 31,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Heart failure"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "169b70bc-01d6-451c-aba4-d2f25775fd9a",
+      "facility_id": "450358",
+      "name": "Sandra Williams",
+      "age": 83,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "40f77ae2-a621-4b4d-86c8-c335ea095671",
+      "facility_id": "360180",
+      "name": "Andrew Moore",
+      "age": 40,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Type 2 diabetes mellitus",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "85aa76e3-5e50-47bc-8b95-485846ed91a1",
+      "facility_id": "140276",
+      "name": "Matthew Wilson",
+      "age": 50,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Diabetes mellitus",
+        "Type 1 diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "other"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "a254eb42-3884-447f-8850-528ee46bf825",
+      "facility_id": "220071",
+      "name": "Jennifer Ramirez",
+      "age": 63,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "2472cb61-3b5e-4dbb-a22d-9552a07a7c09",
+      "facility_id": "330214",
+      "name": "Lisa Jones",
+      "age": 51,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung"
+      ],
+      "cms_groups": [
+        "copd"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "8605674f-71bb-4677-9b5a-25ad6d9d595b",
+      "facility_id": "050454",
+      "name": "Jennifer Hernandez",
+      "age": 82,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "c7c6b1fe-930d-4d80-a1c0-8122d18abf64",
+      "facility_id": "050424",
+      "name": "Mark Martin",
+      "age": 65,
+      "gender": "male",
+      "conditions": [
+        "History of myocardial infarction",
+        "Chronic obstructive lung disease",
+        "Hypothyroidism",
+        "Diabetes mellitus",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "46a07bad-deec-428f-8c83-1d559cc37194",
+      "facility_id": "100007",
+      "name": "Jessica Smith",
+      "age": 62,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Acute myocardial infarction"
+      ],
+      "cms_groups": [
+        "stroke",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "53770b28-8fee-48d8-a426-d08729f8f6cd",
+      "facility_id": "100034",
+      "name": "Elizabeth Perez",
+      "age": 31,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Heart failure",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "f0aa6d6c-3c1f-431a-a457-9843c8ee8fc5",
+      "facility_id": "450289",
+      "name": "Dorothy Rodriguez",
+      "age": 83,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Ischemic heart disease",
+        "Type 1 diabetes mellitus",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3c6712fa-7991-4c00-9f4b-e2086b3eb60b",
+      "facility_id": "450358",
+      "name": "Donald Taylor",
+      "age": 56,
+      "gender": "male",
+      "conditions": [
+        "Heart failure",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "299ed558-7ff0-49d6-91e6-c1d075977fbe",
+      "facility_id": "360180",
+      "name": "Margaret Clark",
+      "age": 39,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "cac21cac-b9d5-44cb-8989-6498f156afd3",
+      "facility_id": "140276",
+      "name": "Emily Johnson",
+      "age": 88,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "copd",
+        "stroke"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "d9520898-52ef-411d-a0fb-387fcbb5fb45",
+      "facility_id": "220071",
+      "name": "Dorothy Anderson",
+      "age": 46,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Hypothyroidism",
+        "Type 1 diabetes mellitus",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd",
+        "other"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "0e506d86-573d-4b5f-ac74-cf0e377c8d05",
+      "facility_id": "330214",
+      "name": "Barbara Miller",
+      "age": 37,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Acute myocardial infarction",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "pneumonia",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "07f835f1-4240-4edc-8798-d7c3770831a4",
+      "facility_id": "050454",
+      "name": "Richard Smith",
+      "age": 51,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Pneumonia",
+        "Hypothyroidism",
+        "Ischemic heart disease",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "copd",
+        "pneumonia",
+        "diabetes",
+        "ihd",
+        "other"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "f18192f5-9e4c-4673-95f9-0922584241f3",
+      "facility_id": "050424",
+      "name": "Ashley Miller",
+      "age": 73,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "dbffe262-6075-4eca-bbf6-20832717f87d",
+      "facility_id": "100007",
+      "name": "Ashley Garcia",
+      "age": 65,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "49c15cb7-2c4d-425f-88d4-59c39e1865fd",
+      "facility_id": "100034",
+      "name": "Linda Lee",
+      "age": 64,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Acute myocardial infarction",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "a68ab84c-ea5e-4837-a1b8-9ec6bf9f9565",
+      "facility_id": "450289",
+      "name": "Sandra Jackson",
+      "age": 86,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Type 2 diabetes mellitus",
+        "Ischemic heart disease",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "ihd"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "7a19bb6d-ebb7-40ec-98d7-ceab94308b9a",
+      "facility_id": "450358",
+      "name": "Thomas Miller",
+      "age": 26,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Disorder of lung"
+      ],
+      "cms_groups": [
+        "copd",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "434baf5f-728f-47c0-9820-ef45e4de7319",
+      "facility_id": "360180",
+      "name": "Daniel Lee",
+      "age": 30,
+      "gender": "male",
+      "conditions": [
+        "History of myocardial infarction",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 6,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "9b6f2404-cc04-4110-a4c2-c9691766e218",
+      "facility_id": "140276",
+      "name": "Donald Robinson",
+      "age": 69,
+      "gender": "male",
+      "conditions": [
+        "Heart failure",
+        "Disorder of lung",
+        "Ischemic heart disease",
+        "Hypertensive disorder",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "copd",
+        "diabetes",
+        "heart-failure",
+        "ihd",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "23b9551e-ab9f-4c4c-b4fe-e40257a1aa67",
+      "facility_id": "220071",
+      "name": "John Clark",
+      "age": 31,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Heart failure",
+        "Diabetes mellitus",
+        "Type 1 diabetes mellitus",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "copd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "61a9a9e4-8b16-4109-ade7-a2ff3f01f5da",
+      "facility_id": "330214",
+      "name": "Joseph Miller",
+      "age": 29,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "other",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "fee78428-673b-4497-b845-0885aa24d0e9",
+      "facility_id": "050454",
+      "name": "Nancy Brown",
+      "age": 82,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "74a187e0-292d-4653-83b4-e3708f88c127",
+      "facility_id": "050424",
+      "name": "Charles Smith",
+      "age": 55,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Pneumonia",
+        "Ischemic heart disease",
+        "Diabetes mellitus",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd",
+        "pneumonia"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3a29b60d-2beb-4f15-8f85-f2d2ed1b75dc",
+      "facility_id": "100007",
+      "name": "Kimberly Johnson",
+      "age": 58,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "556a3b0c-5d99-4bf9-af8f-500b14f23e3b",
+      "facility_id": "100034",
+      "name": "Lisa Williams",
+      "age": 64,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Type 1 diabetes mellitus",
+        "Type 2 diabetes mellitus",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "pneumonia",
+        "hypertension"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "c2a626e6-ddaa-4155-b625-4bc472926c13",
+      "facility_id": "450289",
+      "name": "Linda Garcia",
+      "age": 57,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Type 1 diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "pneumonia"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "84769200-c835-4abc-912c-d3c09973ec8a",
+      "facility_id": "450358",
+      "name": "Anthony Brown",
+      "age": 32,
+      "gender": "male",
+      "conditions": [
+        "History of myocardial infarction",
+        "Diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "89042055-6bb1-45c7-b229-cfd968d2b31b",
+      "facility_id": "360180",
+      "name": "Sandra Williams",
+      "age": 34,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Heart failure",
+        "Hypertensive disorder",
+        "Type 1 diabetes mellitus",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3551bdc7-338e-4ec8-8783-c1925af94c37",
+      "facility_id": "140276",
+      "name": "Sarah Williams",
+      "age": 57,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "other",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "b7d20174-b352-43a2-b39f-7677f9dbda03",
+      "facility_id": "220071",
+      "name": "Michael Jackson",
+      "age": 25,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "0e430c66-c8c0-4e65-9d98-003cb4b8bb25",
+      "facility_id": "330214",
+      "name": "Betty Williams",
+      "age": 33,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Cerebrovascular accident",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "stroke"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "f8186439-bbf7-4f60-9a4d-cd3283445d84",
+      "facility_id": "050454",
+      "name": "Christopher Sanchez",
+      "age": 52,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease"
+      ],
+      "cms_groups": [
+        "copd"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "0019443a-82cd-4f1b-bbc1-44d8f2c6e175",
+      "facility_id": "050424",
+      "name": "Jennifer Jackson",
+      "age": 57,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "copd"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "4a04716d-898b-4cec-b89f-0cd1dd6ab1af",
+      "facility_id": "100007",
+      "name": "Nancy Anderson",
+      "age": 83,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Ischemic heart disease",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "pneumonia"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "6470e4fc-325b-462a-bfd1-7877603646f8",
+      "facility_id": "100034",
+      "name": "Christopher Jones",
+      "age": 83,
+      "gender": "male",
+      "conditions": [
+        "Heart failure",
+        "Pneumonia"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "pneumonia"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "f30c6686-2bb0-4787-823d-55689c3fcf1c",
+      "facility_id": "450289",
+      "name": "Betty Thomas",
+      "age": 88,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "ebe8f684-9d16-428e-97f0-9cf5d944496e",
+      "facility_id": "450358",
+      "name": "Michael Davis",
+      "age": 32,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction",
+        "History of myocardial infarction",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "other",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "ee87fece-fe61-4a66-8001-ca87124ca671",
+      "facility_id": "360180",
+      "name": "Steven Ramirez",
+      "age": 58,
+      "gender": "male",
+      "conditions": [
+        "Disorder of lung",
+        "Hypertensive disorder",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "copd",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "419eb848-d911-4a8a-92c5-0f5d93354b8d",
+      "facility_id": "140276",
+      "name": "Sarah Sanchez",
+      "age": 81,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke"
+      ],
+      "num_encounters": 2,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "035e4b72-da13-4200-b2b7-c3eebb0c47be",
+      "facility_id": "220071",
+      "name": "Anthony Lee",
+      "age": 76,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Pneumonia"
+      ],
+      "cms_groups": [
+        "copd",
+        "pneumonia"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "5507d238-f358-43db-8e54-06472f997808",
+      "facility_id": "330214",
+      "name": "Ashley Lewis",
+      "age": 31,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Hypothyroidism",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "edd1a9c2-4ea7-4cfa-9cec-c2cf9ca82b1d",
+      "facility_id": "050454",
+      "name": "Matthew Moore",
+      "age": 55,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "d2f22ee3-4e49-483a-aa38-176eb064a42e",
+      "facility_id": "050424",
+      "name": "Ashley Ramirez",
+      "age": 28,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Acute myocardial infarction",
+        "Type 2 diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "e3ceefbb-752c-4d53-889e-98d5edd57c29",
+      "facility_id": "100007",
+      "name": "Charles Smith",
+      "age": 56,
+      "gender": "male",
+      "conditions": [
+        "Acute myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "191563a4-2451-4391-b6d0-32b20c2f2b62",
+      "facility_id": "100034",
+      "name": "Susan Jones",
+      "age": 44,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd"
+      ],
+      "num_encounters": 3,
+      "num_observations": 5,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "07867c83-45a9-4581-a74a-7d318b890645",
+      "facility_id": "450289",
+      "name": "Andrew Jackson",
+      "age": 35,
+      "gender": "male",
+      "conditions": [
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 4,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "6250f0c1-01d5-4cd6-a34d-0c893f7a30e1",
+      "facility_id": "450358",
+      "name": "Mary Lewis",
+      "age": 62,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "stroke",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "4bcced64-3781-4b6f-afd8-9bf4cfac72d2",
+      "facility_id": "360180",
+      "name": "Michael Lee",
+      "age": 89,
+      "gender": "male",
+      "conditions": [
+        "Disorder of lung"
+      ],
+      "cms_groups": [
+        "copd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "41fe7cd0-2fa7-4341-9c18-e77d9224aa3c",
+      "facility_id": "140276",
+      "name": "Margaret Martinez",
+      "age": 76,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "22d2a253-3ca7-4361-bc0b-5691a6b9a7c1",
+      "facility_id": "220071",
+      "name": "Donna Rodriguez",
+      "age": 25,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "0282fd87-52f4-4f72-9ada-0741cca583bd",
+      "facility_id": "330214",
+      "name": "James Lee",
+      "age": 77,
+      "gender": "male",
+      "conditions": [
+        "Heart failure",
+        "Acute myocardial infarction",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "38896214-2440-447e-a875-e02231e28caf",
+      "facility_id": "050454",
+      "name": "Michael Harris",
+      "age": 32,
+      "gender": "male",
+      "conditions": [
+        "Pneumonia"
+      ],
+      "cms_groups": [
+        "pneumonia"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "61d9456c-47a7-4eff-a524-c9930b509f4d",
+      "facility_id": "050424",
+      "name": "Margaret Martin",
+      "age": 29,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "History of myocardial infarction",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "copd",
+        "hypertension",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "47373d4c-8d31-4842-8dbf-d4b2edb4d509",
+      "facility_id": "100007",
+      "name": "Elizabeth Martinez",
+      "age": 29,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Diabetes mellitus",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "549a33c7-3dc6-4c28-84c5-4c7a657860ac",
+      "facility_id": "100034",
+      "name": "Richard Martinez",
+      "age": 50,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Diabetes mellitus",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "9eed09d2-5996-46a7-b079-1130631a5b3b",
+      "facility_id": "450289",
+      "name": "Linda Gonzalez",
+      "age": 68,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung"
+      ],
+      "cms_groups": [
+        "copd"
+      ],
+      "num_encounters": 3,
+      "num_observations": 4,
+      "risk_level": "medium"
+    },
+    {
+      "patient_id": "001bc445-185a-4a88-b2f6-ccc4182850cf",
+      "facility_id": "450358",
+      "name": "Margaret Gonzalez",
+      "age": 50,
+      "gender": "female",
+      "conditions": [
+        "Acute myocardial infarction",
+        "Heart failure",
+        "Type 1 diabetes mellitus",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "heart-failure",
+        "ami"
+      ],
+      "num_encounters": 3,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "d2b41f60-6e76-48a7-ac79-4d8c1cb564d0",
+      "facility_id": "360180",
+      "name": "Kimberly Williams",
+      "age": 65,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Type 1 diabetes mellitus",
+        "Ischemic heart disease",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "ihd",
+        "copd",
+        "other"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3f72781e-0fb2-4d07-97aa-c281febdee19",
+      "facility_id": "140276",
+      "name": "Steven Lee",
+      "age": 88,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "Hypertensive disorder",
+        "Hypothyroidism",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "copd",
+        "other",
+        "hypertension"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "5cb09bf2-6f04-428a-8d46-d927fb0762aa",
+      "facility_id": "220071",
+      "name": "Linda Thompson",
+      "age": 44,
+      "gender": "female",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "History of myocardial infarction",
+        "Type 1 diabetes mellitus",
+        "Hypothyroidism",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "copd",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "0053cc5b-adc6-47bc-bf1d-01eb43338434",
+      "facility_id": "330214",
+      "name": "Elizabeth Taylor",
+      "age": 54,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "History of myocardial infarction",
+        "Hypothyroidism",
+        "Hypertensive disorder",
+        "Diabetes mellitus"
+      ],
+      "cms_groups": [
+        "pneumonia",
+        "diabetes",
+        "hypertension",
+        "other",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "1e38dfbb-d97a-4122-abf3-4e0b2c4b960f",
+      "facility_id": "050454",
+      "name": "Dorothy Wilson",
+      "age": 57,
+      "gender": "female",
+      "conditions": [
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "ami"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "low"
+    },
+    {
+      "patient_id": "82559ee7-115d-4443-b360-d8373c0c0444",
+      "facility_id": "050424",
+      "name": "Betty White",
+      "age": 78,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Diabetes mellitus",
+        "Type 2 diabetes mellitus",
+        "Hypothyroidism"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "pneumonia"
+      ],
+      "num_encounters": 1,
+      "num_observations": 3,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "23ff6b03-d5d9-43ec-afac-e5a11cbd075e",
+      "facility_id": "100007",
+      "name": "Susan Johnson",
+      "age": 37,
+      "gender": "female",
+      "conditions": [
+        "Disorder of lung",
+        "Cerebrovascular accident",
+        "Hypothyroidism",
+        "Hypertensive disorder",
+        "Type 2 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "copd",
+        "stroke",
+        "diabetes",
+        "hypertension",
+        "other"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "1d95590b-5de1-4d7a-9390-eb1ceb76eab8",
+      "facility_id": "100034",
+      "name": "Thomas Davis",
+      "age": 65,
+      "gender": "male",
+      "conditions": [
+        "Pneumonia",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "pneumonia"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "d6e104c1-e765-46e5-b9b5-88afdfbc981f",
+      "facility_id": "450289",
+      "name": "Ashley Moore",
+      "age": 88,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident"
+      ],
+      "cms_groups": [
+        "stroke"
+      ],
+      "num_encounters": 2,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "fdc79915-40c6-46ec-9ad7-6a36a67e08b1",
+      "facility_id": "450358",
+      "name": "David Sanchez",
+      "age": 77,
+      "gender": "male",
+      "conditions": [
+        "Chronic obstructive lung disease",
+        "History of myocardial infarction"
+      ],
+      "cms_groups": [
+        "copd",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 4,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "3b2aae59-d2d8-4f25-af7b-1f8953be9bd6",
+      "facility_id": "360180",
+      "name": "Sandra Lewis",
+      "age": 84,
+      "gender": "female",
+      "conditions": [
+        "Heart failure",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "ihd"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "42c7efe3-12b3-4ba8-bee2-4094a6399c07",
+      "facility_id": "140276",
+      "name": "Jessica Davis",
+      "age": 65,
+      "gender": "female",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Acute myocardial infarction",
+        "Hypothyroidism",
+        "Type 1 diabetes mellitus"
+      ],
+      "cms_groups": [
+        "diabetes",
+        "other",
+        "stroke",
+        "ami"
+      ],
+      "num_encounters": 1,
+      "num_observations": 5,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "de430897-c28a-4688-affd-67ad5d380740",
+      "facility_id": "220071",
+      "name": "Jessica Garcia",
+      "age": 27,
+      "gender": "female",
+      "conditions": [
+        "Pneumonia",
+        "Heart failure",
+        "Hypertensive disorder"
+      ],
+      "cms_groups": [
+        "heart-failure",
+        "pneumonia",
+        "hypertension"
+      ],
+      "num_encounters": 2,
+      "num_observations": 6,
+      "risk_level": "high"
+    },
+    {
+      "patient_id": "910417a2-7441-40cb-bd55-689f1ff9ee23",
+      "facility_id": "330214",
+      "name": "Joseph Gonzalez",
+      "age": 51,
+      "gender": "male",
+      "conditions": [
+        "Cerebrovascular accident",
+        "Disorder of lung",
+        "Hypertensive disorder",
+        "Ischemic heart disease"
+      ],
+      "cms_groups": [
+        "ihd",
+        "copd",
+        "stroke",
+        "hypertension"
+      ],
+      "num_encounters": 3,
+      "num_observations": 3,
+      "risk_level": "high"
+    }
+  ]
+}

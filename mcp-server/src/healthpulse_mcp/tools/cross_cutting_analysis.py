@@ -3,6 +3,7 @@
 import os
 from typing import Any
 
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
 
@@ -13,6 +14,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     This is the tool that demonstrates AI's unique value — connecting dots across
     siloed data sources to identify systemic failures that individual metrics miss.
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("cross_cutting_analysis", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     state = validate_state(args.get("state"))
 
     fac_id = os.environ.get("HP_FACILITIES_DATASET_ID", "")
@@ -163,7 +170,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 f"and community health"
             )
 
-    return {
+    result = {
         "multi_concern_facilities": multi_concern[:15],
         "total_multi_concern": len(multi_concern),
         "total_facilities_analyzed": len(facilities),
@@ -184,3 +191,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             ),
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
+    return result

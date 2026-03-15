@@ -48,10 +48,13 @@ async def test_executive_briefing_returns_expected_structure(
         result = await run(mock_domo, {"scope": "network", "include_equity": False})
 
     assert "summary_stats" in result
-    assert "top_anomalies" in result
+    assert "anomalies" in result
     assert "care_gaps" in result
+    assert "top_performers" in result
+    assert "bottom_performers" in result
     assert "suggested_prompt" in result
     assert "filters" in result
+    assert "clinical_context" in result
 
 
 @pytest.mark.asyncio
@@ -194,10 +197,10 @@ async def test_executive_briefing_include_equity_returns_equity_summary(
 
 
 @pytest.mark.asyncio
-async def test_executive_briefing_top_anomalies_capped_at_10(
+async def test_executive_briefing_anomalies_capped_at_10(
     mock_domo, sample_quality_rows, sample_readmission_rows
 ):
-    """top_anomalies is capped at 10."""
+    """anomalies is capped at 10."""
     # Build many quality rows to trigger many anomalies
     quality_rows = [
         {"facility_id": str(i), "facility_name": f"H{i}", "state": "NY",
@@ -216,7 +219,145 @@ async def test_executive_briefing_top_anomalies_capped_at_10(
     with patch.dict("os.environ", ENV):
         result = await run(mock_domo, {"scope": "network", "include_equity": False})
 
-    assert len(result["top_anomalies"]) <= 10
+    assert len(result["anomalies"]) <= 10
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_top_performers_structure(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+):
+    """top_performers contains facility entries sorted by star_rating descending."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+    )
+
+    with patch.dict("os.environ", ENV):
+        result = await run(mock_domo, {"scope": "network", "include_equity": False})
+
+    top = result["top_performers"]
+    assert len(top) > 0
+    assert len(top) <= 5
+    # Each entry has expected keys
+    for entry in top:
+        assert "facility" in entry
+        assert "star_rating" in entry
+        assert "state" in entry
+        assert "type" in entry
+    # Sorted descending
+    ratings = [e["star_rating"] for e in top]
+    assert ratings == sorted(ratings, reverse=True)
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_bottom_performers_structure(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+):
+    """bottom_performers contains facility entries sorted by star_rating ascending."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+    )
+
+    with patch.dict("os.environ", ENV):
+        result = await run(mock_domo, {"scope": "network", "include_equity": False})
+
+    bottom = result["bottom_performers"]
+    assert len(bottom) > 0
+    assert len(bottom) <= 5
+    # Sorted ascending
+    ratings = [e["star_rating"] for e in bottom]
+    assert ratings == sorted(ratings)
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_top_performer_is_highest_rated(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+):
+    """First top_performer should be the highest-rated facility."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+    )
+
+    with patch.dict("os.environ", ENV):
+        result = await run(mock_domo, {"scope": "network", "include_equity": False})
+
+    # sample_facilities_rows ratings: 4, 3, 2 → top should be 4
+    assert result["top_performers"][0]["star_rating"] == 4
+    assert result["bottom_performers"][0]["star_rating"] == 2
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_equity_flags_returned(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+):
+    """include_equity=True returns equity_flags array with per-facility entries."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+    )
+
+    with patch.dict("os.environ", ENV_WITH_COMMUNITY):
+        result = await run(mock_domo, {"scope": "network", "include_equity": True})
+
+    assert "equity_flags" in result
+    flags = result["equity_flags"]
+    assert isinstance(flags, list)
+    # sample_svi_rows has 2 high-SVI counties (06037=0.82, 06019=0.91)
+    # so 2 facilities should be flagged (100001 in 06037, 100003 in 06019)
+    assert len(flags) == 2
+    for flag in flags:
+        assert "facility" in flag
+        assert "svi_score" in flag
+        assert "outcome_gap" in flag
+        assert flag["svi_score"] >= 0.75
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_equity_flags_sorted_by_svi(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+):
+    """equity_flags are sorted by svi_score descending."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+    )
+
+    with patch.dict("os.environ", ENV_WITH_COMMUNITY):
+        result = await run(mock_domo, {"scope": "network", "include_equity": True})
+
+    flags = result["equity_flags"]
+    svi_scores = [f["svi_score"] for f in flags]
+    assert svi_scores == sorted(svi_scores, reverse=True)
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_equity_flags_outcome_gap_content(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+):
+    """equity_flags outcome_gap reflects actual care gap data for that facility."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows, sample_svi_rows
+    )
+
+    with patch.dict("os.environ", ENV_WITH_COMMUNITY):
+        result = await run(mock_domo, {"scope": "network", "include_equity": True})
+
+    flags = result["equity_flags"]
+    # Fresno facility (100003, SVI 0.91) has a care gap (ratio 1.08)
+    fresno_flag = [f for f in flags if f["svi_score"] == 0.91][0]
+    assert "Excess readmission ratio" in fresno_flag["outcome_gap"]
+
+
+@pytest.mark.asyncio
+async def test_executive_briefing_no_equity_flags_when_equity_disabled(
+    mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+):
+    """equity_flags not present when include_equity=False."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        sample_facilities_rows, sample_quality_rows, sample_readmission_rows
+    )
+
+    with patch.dict("os.environ", ENV):
+        result = await run(mock_domo, {"scope": "network", "include_equity": False})
+
+    assert "equity_flags" not in result
 
 
 @pytest.mark.asyncio

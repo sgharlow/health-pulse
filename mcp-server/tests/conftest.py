@@ -3,7 +3,19 @@
 import pytest
 from unittest.mock import MagicMock, AsyncMock
 
+from healthpulse_mcp.cache import tool_cache
 from healthpulse_mcp.domo_client import DomoClient
+
+
+@pytest.fixture(autouse=True)
+def _clear_tool_cache():
+    """Clear the module-level tool result cache before every test.
+
+    This prevents cached results from one test leaking into another.
+    """
+    tool_cache.clear()
+    yield
+    tool_cache.clear()
 
 
 @pytest.fixture

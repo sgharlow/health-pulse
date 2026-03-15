@@ -3,6 +3,7 @@
 import os
 from typing import Any
 
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_facility_ids
 
@@ -19,6 +20,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict with facilities (list with nested measures), comparison_count
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("facility_benchmark", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
     quality_id = os.environ.get("HP_QUALITY_DATASET_ID")
     readmissions_id = os.environ.get("HP_READMISSIONS_DATASET_ID")
@@ -144,7 +151,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         facilities_map[fid] for fid in facility_ids if fid in facilities_map
     ]
 
-    return {
+    result = {
         "facilities": ordered_facilities,
         "comparison_count": len(ordered_facilities),
         "clinical_context": {
@@ -165,3 +172,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             ),
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
+    return result

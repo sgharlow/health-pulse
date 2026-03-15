@@ -1,6 +1,6 @@
 """HealthPulse AI MCP server entry point.
 
-Registers 7 healthcare analytics tools and 3 MCP resources via FastMCP and
+Registers 7 healthcare analytics tools and 6 MCP resources via FastMCP and
 exposes them over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
 """
 
@@ -30,7 +30,8 @@ mcp = FastMCP(
     instructions=(
         "Healthcare performance intelligence server. "
         "Provides analytics tools for CMS hospital quality, readmissions, "
-        "equity, and executive reporting. "
+        "equity, executive reporting, and patient-level FHIR drill-down "
+        "with Synthea synthetic data. "
         "SHARP capabilities: "
         + str(SHARP_CAPABILITIES)
     ),
@@ -103,6 +104,8 @@ from healthpulse_mcp.tools import (
     equity_detector,
     executive_briefing,
     facility_benchmark,
+    patient_cohort_analysis,
+    patient_risk_profile,
     quality_monitor,
     state_ranking,
 )
@@ -293,6 +296,59 @@ async def cross_cutting_analysis_tool(
     })
 
 
+@mcp.tool(
+    name="patient_risk_profile",
+    description=(
+        "Get patient-level risk data from synthetic FHIR records. "
+        "Given a facility_id, returns a summary of high-risk patients. "
+        "Given a facility_id AND patient_id (or via SHARP X-Patient-ID header), "
+        "returns that patient's conditions, observations, and risk factors. "
+        "Uses Synthea synthetic data — no real PHI."
+    ),
+)
+async def patient_risk_profile_tool(
+    facility_id: str,
+    patient_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """
+    Args:
+        facility_id: CMS facility CCN ID (e.g. '050454'). Required.
+        patient_id: Optional specific patient UUID for individual drill-down.
+    """
+    return await patient_risk_profile.run({
+        "facility_id": facility_id,
+        "patient_id": patient_id,
+    })
+
+
+@mcp.tool(
+    name="patient_cohort_analysis",
+    description=(
+        "Analyze patient cohorts at a facility using synthetic FHIR data. "
+        "Given a facility_id and optional condition/risk filters, returns cohort "
+        "demographics, comorbidity patterns, and readmission risk indicators. "
+        "Connects synthetic patient data to aggregate CMS quality measures. "
+        "Uses Synthea synthetic data — no real PHI."
+    ),
+)
+async def patient_cohort_analysis_tool(
+    facility_id: str,
+    condition: Optional[str] = None,
+    risk_level: Optional[str] = None,
+) -> dict[str, Any]:
+    """
+    Args:
+        facility_id: CMS facility CCN ID (e.g. '050454'). Required.
+        condition: CMS condition group filter. One of: heart-failure, pneumonia, copd, stroke, ami, diabetes, hypertension, ihd.
+        risk_level: Filter by patient risk level. One of: high, medium, low.
+    """
+    return await patient_cohort_analysis.run({
+        "facility_id": facility_id,
+        "condition": condition,
+        "risk_level": risk_level,
+    })
+
+
 # ---------------------------------------------------------------------------
 # MCP Resource registrations
 # ---------------------------------------------------------------------------
@@ -382,11 +438,111 @@ async def about_server() -> str:
             "executive_briefing — Aggregated network-wide performance data with LLM prompt",
             "state_ranking — Composite performance ranking across all 50 US states",
             "cross_cutting_analysis — Multi-dimensional patterns across quality, equity, and readmissions",
+            "patient_risk_profile — Patient-level risk data from synthetic FHIR records",
+            "patient_cohort_analysis — Cohort demographics, comorbidities, and readmission indicators",
         ],
         "sharp_support": True,
-        "phi_handling": "No PHI — all data is de-identified CMS aggregate and CDC statistics",
+        "phi_handling": "No PHI — all data is de-identified CMS aggregate and CDC/Synthea synthetic",
     }
     return json.dumps(about, indent=2)
+
+
+@mcp.resource("healthpulse://facilities")
+async def list_facilities() -> str:
+    """List hospital facility profiles (bulk listing, limited to 200 rows)."""
+    ds_id = os.environ.get("HP_FACILITIES_DATASET_ID", "")
+    if not ds_id:
+        return json.dumps({"error": "HP_FACILITIES_DATASET_ID not configured"})
+    try:
+        domo = _get_domo_client()
+        sql = (
+            "SELECT facility_id, facility_name, state, city_town, zip_code, "
+            "hospital_type, hospital_overall_rating, emergency_services "
+            "FROM table LIMIT 200"
+        )
+        rows = domo.query_as_dicts(ds_id, sql)
+        return json.dumps({"facilities": rows, "total_returned": len(rows)})
+    except Exception as exc:
+        return json.dumps({"error": str(exc)})
+
+
+@mcp.resource("healthpulse://facilities/{facility_id}")
+async def get_facility(facility_id: str) -> str:
+    """Get a single hospital facility profile by CCN ID (e.g. '050454')."""
+    from healthpulse_mcp.validation import validate_facility_id
+
+    ds_id = os.environ.get("HP_FACILITIES_DATASET_ID", "")
+    if not ds_id:
+        return json.dumps({"error": "HP_FACILITIES_DATASET_ID not configured"})
+
+    clean_id = validate_facility_id(facility_id)
+    if not clean_id:
+        return json.dumps({"error": f"Invalid facility ID: {facility_id!r}"})
+
+    try:
+        domo = _get_domo_client()
+        sql = (
+            "SELECT facility_id, facility_name, state, city_town, zip_code, "
+            "hospital_type, hospital_overall_rating, emergency_services, county_fips "
+            f"FROM table WHERE facility_id = '{clean_id}'"
+        )
+        rows = domo.query_as_dicts(ds_id, sql)
+        if not rows:
+            return json.dumps({"error": f"Facility not found: {clean_id}"})
+        return json.dumps({"facility": rows[0]})
+    except Exception as exc:
+        return json.dumps({"error": str(exc)})
+
+
+# Maps measure group name to CMS measure ID prefixes (mirrors quality_monitor.py)
+_MEASURE_GROUPS: dict[str, dict[str, str]] = {
+    "mortality": {
+        "MORT_30_AMI": "30-day mortality rate for heart attack (AMI)",
+        "MORT_30_HF": "30-day mortality rate for heart failure",
+        "MORT_30_COPD": "30-day mortality rate for COPD",
+        "MORT_30_PN": "30-day mortality rate for pneumonia",
+        "MORT_30_STK": "30-day mortality rate for stroke",
+        "MORT_30_CABG": "30-day mortality rate for CABG surgery",
+    },
+    "readmission": {
+        "READM_30_AMI": "30-day readmission rate for heart attack (AMI)",
+        "READM_30_HF": "30-day readmission rate for heart failure",
+        "READM_30_COPD": "30-day readmission rate for COPD",
+        "READM_30_PN": "30-day readmission rate for pneumonia",
+        "READM_30_HIP_KNEE": "30-day readmission rate for hip/knee replacement",
+        "READM_30_CABG": "30-day readmission rate for CABG surgery",
+    },
+    "safety": {
+        "PSI_90_SAFETY": "Patient Safety Indicator composite score",
+        "HAI_1_SIR": "Central Line-Associated Bloodstream Infection (CLABSI)",
+        "HAI_2_SIR": "Catheter-Associated Urinary Tract Infection (CAUTI)",
+        "COMP_HIP_KNEE": "Rate of complications for hip/knee replacement",
+    },
+    "timeliness": {
+        "OP_18b": "Median time from ED arrival to departure (minutes)",
+        "OP_22": "Percentage of patients who left the ED without being seen",
+        "SEP_1": "Percentage of patients receiving appropriate sepsis care",
+        "IMM_3": "Healthcare workers vaccinated for influenza",
+    },
+}
+
+
+@mcp.resource("healthpulse://measures/{group}")
+async def get_measures_by_group(group: str) -> str:
+    """Get CMS quality measures filtered by group: mortality, readmission, safety, or timeliness."""
+    valid_groups = list(_MEASURE_GROUPS.keys())
+    if group not in valid_groups:
+        return json.dumps({
+            "error": f"Unknown measure group: {group!r}",
+            "valid_groups": valid_groups,
+        })
+
+    measures = _MEASURE_GROUPS[group]
+    return json.dumps({
+        "group": group,
+        "measures": measures,
+        "total_measures": len(measures),
+    })
 
 
 # ---------------------------------------------------------------------------

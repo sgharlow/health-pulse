@@ -3,6 +3,7 @@
 import os
 from typing import Any
 
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
 
@@ -27,6 +28,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict with gaps (top 30), total_gaps, filters
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("care_gap_finder", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     readmissions_id = os.environ.get("HP_READMISSIONS_DATASET_ID")
     quality_id = os.environ.get("HP_QUALITY_DATASET_ID")
 
@@ -152,7 +159,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     # Sort by excess_ratio descending
     gaps.sort(key=lambda x: x.get("excess_ratio", 0), reverse=True)
 
-    return {
+    result = {
         "gaps": gaps[:30],
         "total_gaps": len(gaps),
         "filters": {
@@ -172,3 +179,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             ),
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
+    return result

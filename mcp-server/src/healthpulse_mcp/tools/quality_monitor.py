@@ -4,6 +4,7 @@ import os
 from typing import Any
 
 from healthpulse_mcp.analytics import detect_anomalies
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
 
@@ -30,6 +31,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict with total_facilities_analyzed, measures_checked, anomaly_count, anomalies, filters
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("quality_monitor", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     dataset_id = os.environ.get("HP_QUALITY_DATASET_ID")
     if not dataset_id:
         return {"error": "HP_QUALITY_DATASET_ID environment variable not set"}
@@ -121,4 +128,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             },
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
     return result

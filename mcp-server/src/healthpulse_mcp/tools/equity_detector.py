@@ -3,6 +3,7 @@
 import os
 from typing import Any, Optional
 
+from healthpulse_mcp.cache import TOOL_TTL, tool_cache
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
 
@@ -29,6 +30,12 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict with equity_flags (top 20), disparity_summary, filters
     """
+    # --- Cache check ---
+    cache_key = tool_cache.make_key("equity_detector", args)
+    cached = tool_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     community_id = os.environ.get("HP_COMMUNITY_DATASET_ID")
     facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
 
@@ -153,7 +160,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         ),
     }
 
-    return {
+    result = {
         "equity_flags": equity_flags[:20],
         "disparity_summary": disparity_summary,
         "filters": {
@@ -178,3 +185,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             ),
         },
     }
+
+    tool_cache.set(cache_key, result, TOOL_TTL)
+    return result

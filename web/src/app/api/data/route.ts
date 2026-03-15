@@ -44,8 +44,8 @@ export async function GET(request: Request) {
         anomalyCount: worseCount,
         totalMeasures: quality.length,
       },
-      facilities: facilities.slice(0, 100),
-      quality: quality.slice(0, 200),
+      facilities: facilities,
+      quality: quality,
     });
   } catch (error) {
     console.error('Data fetch error:', error);
