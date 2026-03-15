@@ -3,8 +3,19 @@
 import os
 from typing import Any
 
+from typing import Optional
+
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
+
+
+def _safe_float(value: Any) -> Optional[float]:
+    """Convert value to float, return None on failure."""
+    try:
+        v = float(value)
+        return round(v, 1)
+    except (ValueError, TypeError):
+        return None
 
 
 async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
@@ -45,15 +56,16 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     # Query community SVI data (county level)
     try:
         svi_sql = (
-            f"SELECT county_fips, county_name, state, svi_score "
+            f"SELECT county_fips, county_name, state, svi_score, "
+            f"poverty_rate, uninsured_rate, minority_pct, total_population "
             f"FROM table {state_condition}"
         )
         svi_rows = domo.query_as_dicts(community_id, svi_sql)
     except Exception as exc:
         return {"error": f"Community SVI query failed: {exc}"}
 
-    # Build SVI lookup by county_fips
-    svi_by_fips: dict[str, float] = {}
+    # Build SVI lookup by county_fips — store full community data
+    svi_by_fips: dict[str, dict[str, Any]] = {}
     for row in svi_rows:
         fips = str(row.get("county_fips", "") or "")
         try:
@@ -61,7 +73,14 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         except (ValueError, TypeError):
             score = 0.0
         if fips:
-            svi_by_fips[fips] = score
+            svi_by_fips[fips] = {
+                "svi_score": score,
+                "poverty_rate": _safe_float(row.get("poverty_rate")),
+                "uninsured_rate": _safe_float(row.get("uninsured_rate")),
+                "minority_pct": _safe_float(row.get("minority_pct")),
+                "total_population": _safe_float(row.get("total_population")),
+                "county_name": row.get("county_name"),
+            }
 
     # Query facilities with county_fips
     try:
@@ -81,21 +100,22 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
 
     for fac in fac_rows:
         fips = str(fac.get("county_fips", "") or "")
-        svi = svi_by_fips.get(fips)
-        if svi is None:
-            # Try zero-padded 5-char FIPS
+        community = svi_by_fips.get(fips)
+        if community is None:
             fips_padded = fips.zfill(5)
-            svi = svi_by_fips.get(fips_padded)
+            community = svi_by_fips.get(fips_padded)
 
-        if svi is None:
+        if community is None:
             continue
+
+        svi_score = community["svi_score"]
 
         try:
             rating = float(fac.get("hospital_overall_rating", 0) or 0)
         except (ValueError, TypeError):
             rating = 0.0
 
-        is_high_svi = svi >= svi_threshold
+        is_high_svi = svi_score >= svi_threshold
         if is_high_svi:
             high_svi_ratings.append(rating)
             equity_flags.append({
@@ -103,7 +123,11 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 "facility_name": fac.get("facility_name"),
                 "state": fac.get("state"),
                 "county_fips": fips,
-                "svi_score": round(svi, 4),
+                "svi_score": round(svi_score, 4),
+                "poverty_rate": community.get("poverty_rate"),
+                "uninsured_rate": community.get("uninsured_rate"),
+                "minority_pct": community.get("minority_pct"),
+                "county_name": community.get("county_name"),
                 "hospital_overall_rating": rating,
                 "hospital_type": fac.get("hospital_type"),
                 "outcome_measure": outcome_measure,
