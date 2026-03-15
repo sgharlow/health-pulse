@@ -1,6 +1,8 @@
-"""Integration tests — verify all 5 tools are registered with valid metadata."""
+"""Integration tests — verify all 5 tools are registered with valid metadata,
+plus API key middleware and SHARP middleware behaviour."""
 
 import asyncio
+import os
 import pytest
 
 from healthpulse_mcp.server import mcp
@@ -126,3 +128,182 @@ async def test_server_has_instructions():
     """Server has non-empty instructions."""
     assert mcp.instructions is not None
     assert len(mcp.instructions) > 20
+
+
+# ---------------------------------------------------------------------------
+# API key middleware tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_api_key_middleware_allows_request_when_no_key_configured(monkeypatch):
+    """If HP_API_KEY is not set, all requests are allowed through."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import PlainTextResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import ApiKeyMiddleware
+
+    monkeypatch.delenv("HP_API_KEY", raising=False)
+
+    async def homepage(request):
+        return PlainTextResponse("ok")
+
+    app = Starlette(
+        routes=[Route("/", homepage)],
+        middleware=[Middleware(ApiKeyMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    response = client.get("/")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_api_key_middleware_rejects_missing_key(monkeypatch):
+    """If HP_API_KEY is set, requests without the header are rejected with 401."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import PlainTextResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import ApiKeyMiddleware
+
+    monkeypatch.setenv("HP_API_KEY", "test-secret-key")
+    monkeypatch.setenv("HP_API_KEY_HEADER", "X-API-Key")
+
+    async def homepage(request):
+        return PlainTextResponse("ok")
+
+    app = Starlette(
+        routes=[Route("/", homepage)],
+        middleware=[Middleware(ApiKeyMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    response = client.get("/")
+    assert response.status_code == 401
+    assert response.json() == {"error": "Unauthorized"}
+
+
+@pytest.mark.asyncio
+async def test_api_key_middleware_accepts_correct_key(monkeypatch):
+    """If HP_API_KEY is set, requests with the correct key are allowed through."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import PlainTextResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import ApiKeyMiddleware
+
+    monkeypatch.setenv("HP_API_KEY", "test-secret-key")
+    monkeypatch.setenv("HP_API_KEY_HEADER", "X-API-Key")
+
+    async def homepage(request):
+        return PlainTextResponse("ok")
+
+    app = Starlette(
+        routes=[Route("/", homepage)],
+        middleware=[Middleware(ApiKeyMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    response = client.get("/", headers={"X-API-Key": "test-secret-key"})
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_api_key_middleware_rejects_wrong_key(monkeypatch):
+    """Requests with an incorrect API key are rejected with 401."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import PlainTextResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import ApiKeyMiddleware
+
+    monkeypatch.setenv("HP_API_KEY", "correct-key")
+    monkeypatch.setenv("HP_API_KEY_HEADER", "X-API-Key")
+
+    async def homepage(request):
+        return PlainTextResponse("ok")
+
+    app = Starlette(
+        routes=[Route("/", homepage)],
+        middleware=[Middleware(ApiKeyMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    response = client.get("/", headers={"X-API-Key": "wrong-key"})
+    assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# SHARP middleware tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_sharp_middleware_sets_context_from_headers():
+    """SharpMiddleware extracts SHARP headers and sets them in the contextvar."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import JSONResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import SharpMiddleware
+    from healthpulse_mcp.sharp import get_sharp_context
+
+    captured = {}
+
+    async def inspect(request):
+        ctx = get_sharp_context()
+        captured["fhir_server_url"] = ctx.fhir_server_url
+        captured["patient_id"] = ctx.patient_id
+        captured["has_fhir_context"] = ctx.has_fhir_context
+        return JSONResponse({"ok": True})
+
+    app = Starlette(
+        routes=[Route("/", inspect)],
+        middleware=[Middleware(SharpMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    client.get("/", headers={
+        "X-FHIR-Server-URL": "https://fhir.example.com/r4",
+        "X-Patient-ID": "patient-999",
+        "X-FHIR-Access-Token": "tok-abc",
+    })
+    assert captured["fhir_server_url"] == "https://fhir.example.com/r4"
+    assert captured["patient_id"] == "patient-999"
+    assert captured["has_fhir_context"] is True
+
+
+@pytest.mark.asyncio
+async def test_sharp_middleware_empty_headers_sets_empty_context():
+    """SharpMiddleware with no SHARP headers leaves context fields as empty string."""
+    from starlette.testclient import TestClient
+    from starlette.requests import Request
+    from starlette.responses import JSONResponse
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+    from starlette.middleware import Middleware
+    from healthpulse_mcp.server import SharpMiddleware
+    from healthpulse_mcp.sharp import get_sharp_context
+
+    captured = {}
+
+    async def inspect(request):
+        ctx = get_sharp_context()
+        captured["fhir_server_url"] = ctx.fhir_server_url
+        captured["patient_id"] = ctx.patient_id
+        return JSONResponse({"ok": True})
+
+    app = Starlette(
+        routes=[Route("/", inspect)],
+        middleware=[Middleware(SharpMiddleware)],
+    )
+    client = TestClient(app, raise_server_exceptions=True)
+    client.get("/")
+    # extract_sharp_context returns "" for missing headers (not None) via dict.get default ""
+    assert captured["fhir_server_url"] == "" or captured["fhir_server_url"] is None
+    assert captured["patient_id"] == "" or captured["patient_id"] is None

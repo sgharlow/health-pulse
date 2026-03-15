@@ -1,26 +1,27 @@
 """HealthPulse AI MCP server entry point.
 
 Registers 5 healthcare analytics tools via FastMCP and exposes them
-over stdio (default) or HTTP transport.
+over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
 """
 
+import contextlib
 import os
-from typing import Any, Optional
+from typing import Any, AsyncIterator, Optional
 
 from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from starlette.routing import Mount
+import uvicorn
 
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.sharp import SHARP_CAPABILITIES
-from healthpulse_mcp.tools import (
-    care_gap_finder,
-    equity_detector,
-    executive_briefing,
-    facility_benchmark,
-    quality_monitor,
-)
 
 # ---------------------------------------------------------------------------
-# Server initialisation
+# Server initialisation — Streamable HTTP, stateless mode
 # ---------------------------------------------------------------------------
 
 mcp = FastMCP(
@@ -32,6 +33,10 @@ mcp = FastMCP(
         "SHARP capabilities: "
         + str(SHARP_CAPABILITIES)
     ),
+    stateless_http=True,
+    streamable_http_path="/mcp",
+    host="0.0.0.0",
+    port=int(os.environ.get("PORT", "8000")),
 )
 
 
@@ -43,8 +48,51 @@ def _get_domo_client() -> DomoClient:
 
 
 # ---------------------------------------------------------------------------
-# Tool: quality_monitor
+# Middleware: API key authentication
 # ---------------------------------------------------------------------------
+
+class ApiKeyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        api_key = os.environ.get("HP_API_KEY", "")
+        if api_key:  # Only enforce if API key is configured
+            header_name = os.environ.get("HP_API_KEY_HEADER", "X-API-Key")
+            provided = request.headers.get(header_name, "")
+            if provided != api_key:
+                return JSONResponse({"error": "Unauthorized"}, status_code=401)
+        return await call_next(request)
+
+
+# ---------------------------------------------------------------------------
+# Middleware: SHARP header extraction
+# ---------------------------------------------------------------------------
+
+class SharpMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        from healthpulse_mcp.sharp import extract_sharp_context, set_sharp_context
+        headers = dict(request.headers)
+        # Starlette normalises headers to lowercase
+        sharp_headers = {
+            "X-FHIR-Server-URL": headers.get("x-fhir-server-url", ""),
+            "X-Patient-ID": headers.get("x-patient-id", ""),
+            "X-FHIR-Access-Token": headers.get("x-fhir-access-token", ""),
+        }
+        ctx = extract_sharp_context(sharp_headers)
+        set_sharp_context(ctx)
+        return await call_next(request)
+
+
+# ---------------------------------------------------------------------------
+# Tool registrations (unchanged call pattern: server decorator → tool module)
+# ---------------------------------------------------------------------------
+
+from healthpulse_mcp.tools import (
+    care_gap_finder,
+    equity_detector,
+    executive_briefing,
+    facility_benchmark,
+    quality_monitor,
+)
+
 
 @mcp.tool(
     name="quality_monitor",
@@ -73,10 +121,6 @@ async def quality_monitor_tool(
     })
 
 
-# ---------------------------------------------------------------------------
-# Tool: care_gap_finder
-# ---------------------------------------------------------------------------
-
 @mcp.tool(
     name="care_gap_finder",
     description=(
@@ -103,10 +147,6 @@ async def care_gap_finder_tool(
         "min_excess_ratio": min_excess_ratio,
     })
 
-
-# ---------------------------------------------------------------------------
-# Tool: equity_detector
-# ---------------------------------------------------------------------------
 
 @mcp.tool(
     name="equity_detector",
@@ -135,10 +175,6 @@ async def equity_detector_tool(
     })
 
 
-# ---------------------------------------------------------------------------
-# Tool: facility_benchmark
-# ---------------------------------------------------------------------------
-
 @mcp.tool(
     name="facility_benchmark",
     description=(
@@ -162,10 +198,6 @@ async def facility_benchmark_tool(
         "measures": measures or [],
     })
 
-
-# ---------------------------------------------------------------------------
-# Tool: executive_briefing
-# ---------------------------------------------------------------------------
 
 @mcp.tool(
     name="executive_briefing",
@@ -202,9 +234,33 @@ async def executive_briefing_tool(
 # Entry point
 # ---------------------------------------------------------------------------
 
+def _build_app() -> Starlette:
+    """Build the full ASGI app: FastMCP mounted under middleware."""
+    # Initialise the inner Starlette app and the session manager (lazy, first call)
+    mcp_app = mcp.streamable_http_app()
+
+    # Build a lifespan that delegates to the session manager
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Starlette) -> AsyncIterator[None]:
+        async with mcp.session_manager.run():
+            yield
+
+    # Wrap with API key auth and SHARP header extraction middleware
+    return Starlette(
+        routes=[Mount("/", app=mcp_app)],
+        middleware=[
+            Middleware(ApiKeyMiddleware),
+            Middleware(SharpMiddleware),
+        ],
+        lifespan=lifespan,
+    )
+
+
 def main() -> None:
-    """Run the HealthPulse MCP server over stdio."""
-    mcp.run()
+    """Run the HealthPulse MCP server over Streamable HTTP at /mcp."""
+    app = _build_app()
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":

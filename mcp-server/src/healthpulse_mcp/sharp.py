@@ -7,6 +7,7 @@ Three HTTP headers propagate healthcare context:
   - X-FHIR-Access-Token (NEVER logged or passed to LLM)
 """
 
+import contextvars
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -48,3 +49,22 @@ def extract_sharp_context(headers: dict[str, str]) -> SharpContext:
         patient_id=headers.get("X-Patient-ID"),
         fhir_access_token=headers.get("X-FHIR-Access-Token"),
     )
+
+
+# ---------------------------------------------------------------------------
+# Per-request contextvar for SHARP context (used by HTTP middleware)
+# ---------------------------------------------------------------------------
+
+_sharp_context_var: contextvars.ContextVar[SharpContext] = contextvars.ContextVar(
+    "sharp_context", default=SharpContext()
+)
+
+
+def get_sharp_context() -> SharpContext:
+    """Get the current request's SHARP context (set by middleware)."""
+    return _sharp_context_var.get()
+
+
+def set_sharp_context(ctx: SharpContext) -> None:
+    """Set SHARP context for the current request (called by middleware)."""
+    _sharp_context_var.set(ctx)
