@@ -19,7 +19,7 @@ EXPECTED_TOOLS = {
 
 
 @pytest.mark.asyncio
-async def test_all_five_tools_registered():
+async def test_all_tools_registered():
     """All 7 healthcare analytics tools must be registered on the MCP server."""
     tools = await mcp.list_tools()
     tool_names = {t.name for t in tools}

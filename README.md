@@ -2,7 +2,7 @@
 
 > Healthcare Performance Intelligence MCP Server
 
-HealthPulse AI is a Model Context Protocol (MCP) server that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities. It gives AI agents five analytics tools covering quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, and executive briefing generation — all backed by real public data loaded into Domo and served over a production HTTPS endpoint.
+HealthPulse AI is a Model Context Protocol (MCP) server that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities. It gives AI agents seven analytics tools covering quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, executive briefing generation, state-level performance ranking, and cross-cutting multi-factor risk analysis — all backed by real public data loaded into Domo and served over a production HTTPS endpoint.
 
 ## What It Does
 
@@ -22,7 +22,7 @@ Prompt Opinion Marketplace
 HealthPulse AI MCP Server  [Railway / Docker]
   - ApiKeyMiddleware
   - SharpMiddleware (SHARP/FHIR context)
-  - 5 FastMCP tools
+  - 7 FastMCP tools
         |
         | Domo REST API (OAuth)
         v
@@ -187,6 +187,35 @@ Generate a structured briefing aggregating quality, readmissions, and equity dat
 
 The `suggested_prompt` field contains a ready-to-use prompt string for generating an executive narrative from the structured data.
 
+---
+
+### `state_ranking`
+
+Ranks all US states by composite healthcare performance score.
+
+**Input:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | integer | 10 | Number of states to return |
+| `order` | string | "worst" | Sort order: "worst" or "best" first |
+
+**Output:** Rankings with state, facility_count, avg_star_rating, worse_than_national_pct, composite_score (0-100).
+
+---
+
+### `cross_cutting_analysis`
+
+Finds facilities with MULTIPLE simultaneous concerns across quality, readmissions, equity, and star ratings. This is the AI differentiator — identifies compounding risk factors invisible in siloed analysis.
+
+**Input:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `state` | string | (all) | Optional 2-letter state code |
+
+**Output:** Multi-concern facilities with concern_count, list of concerns, SVI data, systemic patterns detected.
+
 ## Deployment
 
 The server is deployed as a Docker container on Railway.
@@ -224,7 +253,7 @@ Environment variables are configured in Railway's dashboard. The server picks up
 | Analytics | Z-score anomaly detection (custom implementation) |
 | Healthcare Context | SHARP-on-MCP (X-FHIR-* headers) |
 | Dashboard | Next.js 16, TypeScript, Tailwind CSS |
-| Testing | pytest, pytest-asyncio (80+ unit tests) |
+| Testing | pytest, pytest-asyncio (100+ unit tests) |
 | Deployment | Docker on Railway |
 | Auth | Optional API key middleware |
 

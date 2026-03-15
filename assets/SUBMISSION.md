@@ -2,7 +2,7 @@
 
 ## Summary
 
-HealthPulse AI is a production-deployed MCP server that gives AI agents five healthcare analytics tools backed by 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities. It surfaces quality anomalies, care gaps, health equity disparities, facility benchmarks, and executive briefings — turning public data that exists today into AI-actionable intelligence that no traditional dashboard can deliver.
+HealthPulse AI is a production-deployed MCP server that gives AI agents seven healthcare analytics tools backed by 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities. It surfaces quality anomalies, care gaps, health equity disparities, facility benchmarks, executive briefings, state-level performance rankings, and cross-cutting multi-factor risk analysis — turning public data that exists today into AI-actionable intelligence that no traditional dashboard can deliver.
 
 ---
 
@@ -19,6 +19,8 @@ Traditional hospital quality dashboards display data. HealthPulse AI reasons abo
 - **Equity analysis through correlation, not configuration.** The `equity_detector` correlates facility star ratings with county-level CDC Social Vulnerability Index scores at runtime. A human analyst configuring this join in a BI tool would take days. An AI agent calls one tool and gets the disparity gap between high-SVI and low-SVI facilities in seconds.
 
 - **Conversational specificity.** An AI agent can ask "benchmark these 4 hospitals on AMI mortality" and get a structured comparison. The same question through a CMS website requires navigating multiple pages and manually tabulating results.
+
+- **Multi-dimensional compounding risk detection.** Our `cross_cutting_analysis` tool identifies facilities with multiple simultaneous concerns — combining quality anomalies, excess readmissions, high community vulnerability, and low star ratings in one analysis. In Florida alone, 94 of 222 hospitals (42%) have 2+ compounding risk factors. This multi-dimensional pattern detection is impossible with traditional rule-based dashboards.
 
 ---
 
@@ -63,7 +65,7 @@ HealthPulse AI is not a proof of concept — it is operational today.
 - **Architecture mirrors real healthcare BI + EHR patterns.** The pattern of a middleware server sitting between an AI platform and a clinical data warehouse is exactly how health systems are building AI-enabled workflows today. HealthPulse AI provides a reference implementation of that pattern using open standards.
 
 - **Production-grade engineering:**
-  - 80+ unit tests covering all 5 tools, analytics engine, SHARP context, and Domo client
+  - 100+ unit tests covering all 7 tools, analytics engine, SHARP context, and Domo client
   - Docker deployment on Railway with public HTTPS endpoint
   - API key authentication middleware
   - Stateless HTTP transport (horizontally scalable)
@@ -74,7 +76,7 @@ HealthPulse AI is not a proof of concept — it is operational today.
 ## Technical Details
 
 **MCP Server**
-- 5 tools: `quality_monitor`, `care_gap_finder`, `equity_detector`, `facility_benchmark`, `executive_briefing`
+- 7 tools: `quality_monitor`, `care_gap_finder`, `equity_detector`, `facility_benchmark`, `executive_briefing`, `state_ranking`, `cross_cutting_analysis`
 - SHARP context propagation via `X-FHIR-Server-URL`, `X-Patient-ID`, `X-FHIR-Access-Token` headers
 - Streamable HTTP transport, stateless mode (FastMCP)
 - Optional API key authentication
@@ -85,14 +87,19 @@ HealthPulse AI is not a proof of concept — it is operational today.
 - 5,400+ US hospitals covered
 - Data sources: CMS Hospital General Information, Quality Measures, Readmission & Death Measures, HCAHPS, Timely & Effective Care, Complications & Deaths; CDC Social Vulnerability Index
 
+**Additional Tools**
+- `state_ranking` — Ranks all US states by composite healthcare performance score (facility count, avg star rating, worse-than-national pct); configurable limit and sort order (best/worst first)
+- `cross_cutting_analysis` — Finds facilities with multiple simultaneous concerns across quality anomalies, excess readmissions, high community vulnerability, and low star ratings; detects compounding risk factors invisible in siloed analysis
+
 **Analytics**
 - Z-score anomaly detection with severity classification (`critical` ≥ 3.0σ, `high` ≥ 2.5σ, `medium` ≥ 2.0σ)
 - Statistical disparity analysis: mean star-rating comparison between high-SVI and low-SVI facility populations
 - Excess readmission ratio thresholding with configurable sensitivity
+- Composite state scoring and cross-cutting multi-factor risk aggregation
 
 **Tests**
-- 80+ unit tests
-- Test files: `test_analytics.py`, `test_quality_monitor.py`, `test_care_gap_finder.py`, `test_equity_detector.py`, `test_facility_benchmark.py`, `test_executive_briefing.py`, `test_domo_client.py`, `test_sharp.py`, `test_integration.py`
+- 100+ unit tests
+- Test files: `test_analytics.py`, `test_quality_monitor.py`, `test_care_gap_finder.py`, `test_equity_detector.py`, `test_facility_benchmark.py`, `test_executive_briefing.py`, `test_state_ranking.py`, `test_cross_cutting.py`, `test_validation.py`, `test_domo_client.py`, `test_sharp.py`, `test_integration.py`
 - All tests pass with mocked Domo responses (no live API calls required in CI)
 
 **Deployment**

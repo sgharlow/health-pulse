@@ -5,6 +5,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const state = searchParams.get('state') || 'CA';
 
+  // Validate state parameter
+  if (state && !/^[A-Z]{2}$/.test(state.toUpperCase())) {
+    return NextResponse.json({ error: 'Invalid state code' }, { status: 400 });
+  }
+  const safeState = state ? state.toUpperCase() : 'CA';
+
   try {
     const facId = process.env.HP_FACILITIES_DATASET_ID!;
     const qualId = process.env.HP_QUALITY_DATASET_ID!;
@@ -15,7 +21,7 @@ export async function GET(request: Request) {
     const [facilities, allQuality, readmissions, community] = await Promise.all([
       queryDomo(
         facId,
-        `SELECT facility_id, facility_name, state, hospital_overall_rating FROM table WHERE state = '${state}' LIMIT 6000`
+        `SELECT facility_id, facility_name, state, hospital_overall_rating FROM table WHERE state = '${safeState}' LIMIT 6000`
       ),
       queryDomo(
         qualId,
@@ -23,11 +29,11 @@ export async function GET(request: Request) {
       ),
       queryDomo(
         readmId,
-        `SELECT facility_id, facility_name, measure_name, excess_readmission_ratio FROM table WHERE state = '${state}' LIMIT 10000`
+        `SELECT facility_id, facility_name, measure_name, excess_readmission_ratio FROM table WHERE state = '${safeState}' LIMIT 10000`
       ),
       queryDomo(
         comId,
-        `SELECT county_fips, svi_score, poverty_rate, uninsured_rate, minority_pct FROM table WHERE state = '${state}' LIMIT 5000`
+        `SELECT county_fips, svi_score, poverty_rate, uninsured_rate, minority_pct FROM table WHERE state = '${safeState}' LIMIT 5000`
       ),
     ]);
 
@@ -91,7 +97,7 @@ export async function GET(request: Request) {
       .slice(0, 10);
 
     return NextResponse.json({
-      state,
+      state: safeState,
       summary: {
         totalFacilities: facilities.length,
         avgStarRating: Math.round(avgRating * 100) / 100,

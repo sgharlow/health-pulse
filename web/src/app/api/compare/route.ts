@@ -10,14 +10,20 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Provide ?ids=ID1,ID2' }, { status: 400 });
   }
 
+  // Validate facility IDs
+  const invalidIds = ids.filter(id => !/^[A-Z0-9]{6}$/i.test(id));
+  if (invalidIds.length > 0) {
+    return NextResponse.json({ error: 'Invalid facility ID format' }, { status: 400 });
+  }
+
   try {
     const facId = process.env.HP_FACILITIES_DATASET_ID!;
     const qualId = process.env.HP_QUALITY_DATASET_ID!;
 
     // Fetch all facilities and quality data, then filter in JS (Domo no-subquery constraint)
     const [allFacilities, allQuality] = await Promise.all([
-      queryDomo(facId, `SELECT facility_id, facility_name, state, city_town, hospital_type, hospital_overall_rating FROM table LIMIT 500`),
-      queryDomo(qualId, `SELECT facility_id, measure_id, measure_name, score, compared_to_national FROM table LIMIT 2000`),
+      queryDomo(facId, `SELECT facility_id, facility_name, state, city_town, hospital_type, hospital_overall_rating FROM table LIMIT 6000`),
+      queryDomo(qualId, `SELECT facility_id, measure_id, measure_name, score, compared_to_national FROM table LIMIT 50000`),
     ]);
 
     const facilities = allFacilities.filter(f => ids.includes(f.facility_id));

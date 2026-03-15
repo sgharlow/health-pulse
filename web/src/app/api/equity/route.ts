@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
 import { queryDomo } from '@/lib/data/domo-client';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const state = searchParams.get('state') || '';
+
+  // Validate state parameter
+  if (state && !/^[A-Z]{2}$/.test(state.toUpperCase())) {
+    return NextResponse.json({ error: 'Invalid state code' }, { status: 400 });
+  }
+  const safeState = state ? state.toUpperCase() : '';
+
   try {
     const facId = process.env.HP_FACILITIES_DATASET_ID!;
     const communityId = process.env.HP_COMMUNITY_DATASET_ID!;
 
+    const stateFilter = safeState ? `WHERE state = '${safeState}'` : '';
     const [allFacilities, allCommunity] = await Promise.all([
-      queryDomo(facId, `SELECT facility_id, facility_name, state, hospital_overall_rating, county_fips FROM table LIMIT 500`),
+      queryDomo(facId, `SELECT facility_id, facility_name, state, hospital_overall_rating, county_fips FROM table ${stateFilter} LIMIT 6000`),
       queryDomo(communityId, `SELECT county_fips, svi_score FROM table LIMIT 5000`),
     ]);
 

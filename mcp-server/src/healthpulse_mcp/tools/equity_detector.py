@@ -1,9 +1,7 @@
 """Equity detector tool — flags facilities in high social vulnerability index areas."""
 
 import os
-from typing import Any
-
-from typing import Optional
+from typing import Any, Optional
 
 from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state

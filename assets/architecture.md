@@ -29,13 +29,15 @@
 │  │  X-API-Key header   │  │  Extract FHIR context  │                │
 │  └─────────────────────┘  └────────────────────────┘                │
 │                                                                     │
-│  ┌─────────────────── 5 MCP Tools ──────────────────────────┐      │
+│  ┌─────────────────── 7 MCP Tools ──────────────────────────┐      │
 │  │                                                           │      │
-│  │  quality_monitor     Z-score anomaly detection            │      │
-│  │  care_gap_finder     Excess readmission/mortality gaps    │      │
-│  │  equity_detector     SVI + outcome correlation            │      │
-│  │  facility_benchmark  Cross-facility comparison            │      │
-│  │  executive_briefing  Structured data for AI narrative     │      │
+│  │  quality_monitor        Z-score anomaly detection         │      │
+│  │  care_gap_finder        Excess readmission/mortality gaps │      │
+│  │  equity_detector        SVI + outcome correlation         │      │
+│  │  facility_benchmark     Cross-facility comparison         │      │
+│  │  executive_briefing     Structured data for AI narrative  │      │
+│  │  state_ranking          Composite state performance rank  │      │
+│  │  cross_cutting_analysis Multi-factor compounding risk     │      │
 │  │                                                           │      │
 │  └──────────────────────┬────────────────────────────────────┘      │
 │                         │                                            │
