@@ -93,7 +93,7 @@ export default function Home() {
       {/* Stats bar */}
       <section className="border-y border-gray-800 bg-gray-900/50 py-6 px-6">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm">
-          <span className="text-gray-300"><span className="text-blue-400 font-semibold">9</span> MCP Tools</span>
+          <span className="text-gray-300"><span className="text-blue-400 font-semibold">11</span> MCP Tools</span>
           <span className="text-gray-600">|</span>
           <span className="text-gray-300"><span className="text-blue-400 font-semibold">7</span> Domo Datasets</span>
           <span className="text-gray-600">|</span>

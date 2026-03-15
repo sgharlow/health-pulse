@@ -1,6 +1,6 @@
 """HealthPulse AI MCP server entry point.
 
-Registers 7 healthcare analytics tools and 6 MCP resources via FastMCP and
+Registers 11 healthcare analytics tools and 6 MCP resources via FastMCP and
 exposes them over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
 """
 
