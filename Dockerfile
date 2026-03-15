@@ -9,6 +9,9 @@ COPY mcp-server/src/ mcp-server/src/
 # Copy synthetic patient data for FHIR tools
 COPY data/synthea/ data/synthea/
 
+# Tell FHIR client where to find synthea data (pip install puts code in site-packages)
+ENV HP_SYNTHEA_DATA_DIR=/app/data/synthea
+
 RUN pip install --no-cache-dir ./mcp-server
 
 EXPOSE 8000
