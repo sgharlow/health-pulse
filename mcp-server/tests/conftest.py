@@ -163,3 +163,135 @@ def sample_svi_rows():
         {"county_fips": "06075", "county_name": "San Francisco", "state": "CA", "svi_score": "0.45"},
         {"county_fips": "06019", "county_name": "Fresno", "state": "CA", "svi_score": "0.91"},
     ]
+
+
+@pytest.fixture
+def sample_experience_rows():
+    """Sample HCAHPS patient experience rows representative of CMS data."""
+    return [
+        # Communication measures
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_COMP_1_STAR_RATING",
+            "star_rating": "4",
+            "answer_percent": "78",
+            "patient_survey_star_rating": "4",
+        },
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_COMP_2_STAR_RATING",
+            "star_rating": "3",
+            "answer_percent": "72",
+            "patient_survey_star_rating": "4",
+        },
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_COMP_3_STAR_RATING",
+            "star_rating": "3",
+            "answer_percent": "65",
+            "patient_survey_star_rating": "4",
+        },
+        # Responsiveness
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_COMP_5_STAR_RATING",
+            "star_rating": "2",
+            "answer_percent": "55",
+            "patient_survey_star_rating": "4",
+        },
+        # Environment
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_CLEAN_STAR_RATING",
+            "star_rating": "3",
+            "answer_percent": "68",
+            "patient_survey_star_rating": "4",
+        },
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_QUIET_STAR_RATING",
+            "star_rating": "2",
+            "answer_percent": "58",
+            "patient_survey_star_rating": "4",
+        },
+        # Overall
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_HSP_RATING_STAR_RATING",
+            "star_rating": "3",
+            "answer_percent": "70",
+            "patient_survey_star_rating": "4",
+        },
+        {
+            "facility_id": "100001",
+            "hcahps_measure_id": "H_RECMND_STAR_RATING",
+            "star_rating": "3",
+            "answer_percent": "71",
+            "patient_survey_star_rating": "4",
+        },
+        # Second facility — worse scores
+        {
+            "facility_id": "100002",
+            "hcahps_measure_id": "H_COMP_1_STAR_RATING",
+            "star_rating": "2",
+            "answer_percent": "55",
+            "patient_survey_star_rating": "2",
+        },
+        {
+            "facility_id": "100002",
+            "hcahps_measure_id": "H_COMP_2_STAR_RATING",
+            "star_rating": "1",
+            "answer_percent": "40",
+            "patient_survey_star_rating": "2",
+        },
+        {
+            "facility_id": "100002",
+            "hcahps_measure_id": "H_COMP_5_STAR_RATING",
+            "star_rating": "1",
+            "answer_percent": "30",
+            "patient_survey_star_rating": "2",
+        },
+        {
+            "facility_id": "100002",
+            "hcahps_measure_id": "H_CLEAN_STAR_RATING",
+            "star_rating": "2",
+            "answer_percent": "45",
+            "patient_survey_star_rating": "2",
+        },
+        {
+            "facility_id": "100002",
+            "hcahps_measure_id": "H_HSP_RATING_STAR_RATING",
+            "star_rating": "2",
+            "answer_percent": "48",
+            "patient_survey_star_rating": "2",
+        },
+        # Third facility — good scores
+        {
+            "facility_id": "100003",
+            "hcahps_measure_id": "H_COMP_1_STAR_RATING",
+            "star_rating": "5",
+            "answer_percent": "90",
+            "patient_survey_star_rating": "5",
+        },
+        {
+            "facility_id": "100003",
+            "hcahps_measure_id": "H_COMP_5_STAR_RATING",
+            "star_rating": "5",
+            "answer_percent": "88",
+            "patient_survey_star_rating": "5",
+        },
+        {
+            "facility_id": "100003",
+            "hcahps_measure_id": "H_CLEAN_STAR_RATING",
+            "star_rating": "4",
+            "answer_percent": "82",
+            "patient_survey_star_rating": "5",
+        },
+        {
+            "facility_id": "100003",
+            "hcahps_measure_id": "H_HSP_RATING_STAR_RATING",
+            "star_rating": "5",
+            "answer_percent": "92",
+            "patient_survey_star_rating": "5",
+        },
+    ]

@@ -48,36 +48,41 @@
 #### Script
 
 **[0:00-0:15] Introduction**
-"HealthPulse AI is a healthcare performance intelligence agent that monitors quality metrics, detects anomalies, identifies equity disparities, and benchmarks facilities across 5,400 US hospitals — powered by real CMS data through Domo analytics."
+"HealthPulse AI is a healthcare performance intelligence platform with 11 MCP tools that monitors quality metrics, detects anomalies, identifies equity disparities, analyzes patient experience, benchmarks cost efficiency, and profiles patient risk across 5,400 US hospitals — powered by real CMS data, synthetic FHIR patients, and Domo analytics."
 
 **[0:15-0:50] Quality Anomaly Detection**
 Type: `Show me quality anomalies in California hospitals`
 - Wait for response — agent calls `quality_monitor`
 - Briefly highlight: number of anomalies, a critical finding (Z-score, facility name)
 
-**[0:50-1:30] Cross-Cutting Multi-Factor Analysis**
+**[0:50-1:20] Cross-Cutting Multi-Factor Analysis**
 Type: `Find facilities in Florida with multiple compounding concerns`
 - Wait for response — agent calls `cross_cutting_analysis`
 - Highlight: "94 of 222 Florida hospitals have 2+ simultaneous concerns"
 - Point out a facility with quality + readmission + equity issues together
 
-**[1:30-2:00] Health Equity Analysis**
-Type: `Check for equity disparities among New York hospitals`
-- Wait for response — agent calls `equity_detector`
-- Highlight: real CDC SVI data — BronxCare at SVI 0.997, 38.6% poverty, 7.6% uninsured
+**[1:20-1:45] Patient Experience Analysis**
+Type: `How do patients rate hospital care in New York?`
+- Wait for response — agent calls `patient_experience`
+- Highlight: HCAHPS dimensions — communication, responsiveness, discharge planning scores
 
-**[2:00-2:30] Facility Benchmark**
-Type: `Compare UCSF Medical Center (050454) with NYU Langone (330214)`
-- Wait for response — agent calls `facility_benchmark`
-- Highlight: side-by-side quality measures, star ratings
+**[1:45-2:10] Health Equity + Cost Efficiency**
+Type: `Check for equity disparities and cost efficiency in Texas hospitals`
+- Wait for response — agent calls `equity_detector` and/or `cost_efficiency`
+- Highlight: real CDC SVI data, spending-quality correlation
 
-**[2:30-2:50] State Performance Ranking**
-Type: `Which states have the worst overall healthcare performance?`
-- Wait for response — agent calls `state_ranking`
-- Highlight: Mississippi at composite 24.9, comparison with top states
+**[2:10-2:30] Patient Risk Profile**
+Type: `Show me the risk profile for patient Aaron697`
+- Wait for response — agent calls `patient_risk_profile`
+- Highlight: FHIR patient data — conditions, medications, risk factors from synthetic Synthea data
+
+**[2:30-2:50] Facility Benchmark + State Ranking**
+Type: `Compare UCSF Medical Center (050454) with NYU Langone (330214) and show me the worst-performing states`
+- Wait for response — agent calls `facility_benchmark` and `state_ranking`
+- Highlight: side-by-side quality measures, state composite scores
 
 **[2:50-3:00] Closing**
-"HealthPulse AI — 7 MCP tools, 236,000 rows of real CMS data, CDC Social Vulnerability Index, SHARP healthcare context, deployed on the Prompt Opinion platform."
+"HealthPulse AI — 11 MCP tools, 233,000 rows of real CMS data, 100 synthetic FHIR patients, CDC Social Vulnerability Index, HCAHPS patient experience, Medicare cost analysis, SHARP healthcare context, conversational AI chat, and PDF export — deployed on Prompt Opinion, Railway, and Vercel."
 
 #### Tips
 - Keep queries short — the agent needs time to call tools and respond
@@ -95,17 +100,23 @@ Type: `Which states have the worst overall healthcare performance?`
 3. Title: `HealthPulse AI — Healthcare Performance Intelligence (Agents Assemble Hackathon)`
 4. Description:
    ```
-   HealthPulse AI is an MCP server that provides healthcare performance intelligence
-   across 5,400+ US hospitals using real CMS data and CDC Social Vulnerability Index.
+   HealthPulse AI is an MCP server and dashboard that provides healthcare performance
+   intelligence across 5,400+ US hospitals using real CMS data, synthetic FHIR patients,
+   and CDC Social Vulnerability Index.
 
-   7 MCP tools: quality monitoring, care gap detection, equity analysis,
-   facility benchmarking, executive briefing, state ranking, and cross-cutting
-   multi-factor analysis.
+   11 MCP tools: quality monitoring, care gap detection, equity analysis,
+   facility benchmarking, executive briefing, state ranking, cross-cutting
+   multi-factor analysis, patient risk profiling, cohort analysis,
+   patient experience, and cost efficiency.
+
+   275+ tests. 233K+ rows real data. 100 synthetic FHIR patients.
+   Conversational AI chat. PDF export. Deployed on Prompt Opinion, Railway, and Vercel.
 
    Built for the Agents Assemble Healthcare AI Hackathon on Prompt Opinion.
 
    GitHub: https://github.com/sgharlow/health-pulse
    MCP Server: https://health-pulse-mcp-production.up.railway.app/mcp
+   Dashboard: https://web-umber-alpha-41.vercel.app
    ```
 5. Visibility: **Public** or **Unlisted** (both work for Devpost)
 6. Copy the YouTube URL
@@ -121,9 +132,13 @@ Capture these screenshots and save to `health-pulse/assets/`:
 1. **Prompt Opinion Chat** — showing HealthPulse AI agent responding to a quality query with tool call visible
 2. **Cross-Cutting Analysis** — showing multi-concern facility results
 3. **Equity Analysis** — showing real SVI data with poverty/uninsured rates
-4. **Dashboard Overview** — showing KPI cards and Recharts bar charts
-5. **Dashboard Briefing** — showing the executive briefing page
-6. **Architecture Diagram** — use the text diagram from `assets/architecture.md` or create a visual version
+4. **Patient Experience** — showing HCAHPS dimensional analysis
+5. **Cost Efficiency** — showing spending-quality scatter plot
+6. **Dashboard Hub** — showing KPI cards and navigation to all modules
+7. **Chat Interface** — showing conversational tool routing with Claude
+8. **Executive Briefing** — showing AI narrative with PDF export option
+9. **Patient Risk Profile** — showing FHIR patient data and risk assessment
+10. **Architecture Diagram** — use the text diagram from `assets/architecture.md` or create a visual version
 
 ---
 
@@ -136,9 +151,9 @@ Capture these screenshots and save to `health-pulse/assets/`:
 | Field | Value |
 |-------|-------|
 | **Project Name** | HealthPulse AI |
-| **Tagline** | Healthcare performance intelligence across 5,400+ US hospitals — powered by real CMS data and Domo analytics |
+| **Tagline** | Healthcare performance intelligence across 5,400+ US hospitals — 11 MCP tools, real CMS data, synthetic FHIR patients, conversational AI |
 | **About** | Copy from `assets/SUBMISSION.md` (the full text) |
-| **Built With** | Python, MCP, FastMCP, Domo, Starlette, Next.js, TypeScript, Tailwind CSS, Recharts, Railway, Vercel |
+| **Built With** | Python, MCP, FastMCP, Domo, Starlette, Next.js, TypeScript, Tailwind CSS, Recharts, Vitest, @anthropic-ai/sdk, @react-pdf/renderer, Railway, Vercel, Synthea |
 | **Try It Out** | Prompt Opinion marketplace URL (from step 2) |
 | **Demo Video** | YouTube URL (from step 4) |
 | **Repository** | https://github.com/sgharlow/health-pulse |
@@ -148,9 +163,9 @@ Capture these screenshots and save to `health-pulse/assets/`:
 
 The text in `assets/SUBMISSION.md` is organized around the 3 judging criteria:
 
-1. **The AI Factor** — Z-score anomaly detection, cross-cutting multi-factor analysis, clinical context generation, state composite ranking
-2. **Potential Impact** — $26B readmission costs, $500M+ CMS penalties, 100K+ preventable deaths. Found 94/222 FL hospitals with compounding concerns. Mississippi at composite 24.9/100.
-3. **Feasibility** — Zero PHI (all CMS/CDC public data), Domo enterprise platform, SHARP/MCP open standards, 113 tests, production deployment
+1. **The AI Factor** — 11 MCP tools spanning 6 analytical dimensions, Z-score anomaly detection, cross-cutting multi-factor analysis, FHIR patient drill-down, conversational chat with Claude tool routing, AI narrative briefing with PDF export, HCAHPS patient experience, Medicare cost-quality correlation
+2. **Potential Impact** — $26B readmission costs, $500M+ CMS penalties, 100K+ preventable deaths. Found 94/222 FL hospitals with compounding concerns. Patient experience scores connecting to readmission rates. Cost-quality analysis proving efficiency and quality coexist.
+3. **Feasibility** — Zero PHI (all CMS/CDC public + Synthea synthetic), Domo enterprise platform, SHARP/MCP/FHIR open standards, 275+ tests, production deployment on Railway + Vercel, unified dashboard hub with 3 access modalities
 
 ---
 
@@ -160,11 +175,9 @@ These can be added after initial submission (Devpost allows edits until deadline
 
 | Enhancement | Impact | Time |
 |-------------|--------|------|
-| Add FHIR patient drill-down (Phase 2) | High — completes the SHARP story | 2-3 days |
-| Add Claude AI narrative to dashboard briefing page | Medium — strengthens AI Factor | 2-3 hours |
-| Add HCAHPS patient experience tool | Medium — uses loaded but unused data | 1 day |
-| Add cost efficiency tool | Low — uses loaded but unused data | 1 day |
-| Add web-side tests with Vitest | Medium — shows production quality | 2-3 hours |
+| Add real EHR FHIR endpoint integration | High — moves from synthetic to live patient data | 2-3 days |
+| Add predictive risk scoring model | High — forward-looking analytics | 2-3 days |
+| Add geographic map visualization | Medium — visual impact for judges | 1 day |
 | Add MCP tool result caching | Low — performance optimization | 1-2 hours |
 
 ---
@@ -184,13 +197,14 @@ These can be added after initial submission (Devpost allows edits until deadline
 
 | Metric | Value |
 |--------|-------|
-| MCP Tools | 7 |
-| MCP Resources | 3 |
-| Domo Datasets | 7 (236,749 rows) |
+| MCP Tools | 11 |
+| MCP Resources | 6 (4 static + 2 URI templates) |
+| Domo Datasets | 7 (233K+ rows) |
+| Synthetic FHIR Patients | 100 (1,002 resources) |
 | CMS Hospitals | 5,426 |
-| CDC SVI Counties | 3,144 |
-| Tests | 113 passing |
-| Commits | 23 |
-| Source Files | 51 (38 Python + 13 TypeScript) |
-| Dashboard Pages | 7 |
-| API Routes | 4 |
+| Tests | 275+ (212 MCP + 63 web Vitest) |
+| Dashboard Pages | 8 |
+| API Routes | 6 |
+| Chat Interface | Claude-powered conversational tool routing |
+| AI Briefing | Narrative generation with PDF export |
+| Commits | 23+ |

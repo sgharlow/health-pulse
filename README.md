@@ -1,8 +1,8 @@
 # HealthPulse AI
 
-> Healthcare Performance Intelligence MCP Server
+> Healthcare Performance Intelligence MCP Server + Dashboard
 
-HealthPulse AI is a Model Context Protocol (MCP) server that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities. It gives AI agents seven analytics tools covering quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, executive briefing generation, state-level performance ranking, and cross-cutting multi-factor risk analysis — all backed by real public data loaded into Domo and served over a production HTTPS endpoint.
+HealthPulse AI is a Model Context Protocol (MCP) server and Next.js dashboard that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities and 100 synthetic FHIR patients. It gives AI agents eleven analytics tools spanning quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, executive briefing generation, state-level ranking, cross-cutting multi-factor risk analysis, patient-level risk profiling, cohort analysis, patient experience scoring, and cost efficiency analysis — all backed by real public data loaded into Domo, synthetic FHIR patient data from Synthea, and served over a production HTTPS endpoint with a conversational chat interface and AI narrative briefing.
 
 ## What It Does
 
@@ -11,30 +11,42 @@ HealthPulse AI is a Model Context Protocol (MCP) server that surfaces actionable
 - **equity_detector** — Correlates facility outcomes with county-level CDC Social Vulnerability Index (SVI) scores to flag facilities in high-vulnerability areas and compute star-rating disparity between high- and low-SVI populations.
 - **facility_benchmark** — Benchmarks specific hospitals against each other across quality measures and readmission rates given a list of CMS facility IDs.
 - **executive_briefing** — Aggregates quality anomalies, readmission gaps, and equity indicators into a structured data package with a `suggested_prompt` field ready for LLM narrative generation (the server itself never calls an LLM).
+- **state_ranking** — Ranks all US states by composite healthcare performance score combining star ratings, worse-than-national rates, and facility counts.
+- **cross_cutting_analysis** — Finds facilities with multiple simultaneous concerns across quality, readmissions, equity, and star ratings. Identifies compounding risk factors invisible in siloed analysis.
+- **patient_risk_profile** — Generates a comprehensive risk profile for a synthetic FHIR patient including active conditions, medications, recent encounters, and risk factors derived from clinical data.
+- **patient_cohort_analysis** — Analyzes cohorts of synthetic patients by condition, age group, or risk level to identify population health trends and intervention opportunities.
+- **patient_experience** — Analyzes HCAHPS patient survey data to surface how patients rate their hospital care across communication, responsiveness, environment, and discharge planning dimensions.
+- **cost_efficiency** — Correlates Medicare spending per beneficiary with quality outcomes to identify facilities delivering high-quality care at lower cost and those with spending-quality misalignment.
 
 ## Architecture
 
 ```
-Prompt Opinion Marketplace
+Access Points
+  1. Prompt Opinion Marketplace (MCP tool invocation)
+  2. Next.js Dashboard (visual analytics + AI briefing + PDF export)
+  3. Chat Interface (conversational tool routing via Claude)
         |
-        | MCP (Streamable HTTP)
+        | MCP (Streamable HTTP) / REST API / Claude SDK
         v
 HealthPulse AI MCP Server  [Railway / Docker]
   - ApiKeyMiddleware
   - SharpMiddleware (SHARP/FHIR context)
-  - 7 FastMCP tools
+  - 11 FastMCP tools
+  - 6 MCP resources (4 static + 2 URI templates)
         |
-        | Domo REST API (OAuth)
-        v
-Domo Platform
-  - 7 CMS datasets (233K+ rows)
+        |----- Domo REST API (OAuth) -----> Domo Platform
+        |                                    7 CMS datasets (233K+ rows)
         |
-        | Source
-        v
-CMS Hospital Quality Data (public, de-identified)
+        |----- FHIR/Synthea Data ---------> Synthetic Patient Layer
+                                             100 patients, 1,002 resources
+
+Data Sources
+  - CMS Hospital Quality Data (public, de-identified)
+  - CDC Social Vulnerability Index
+  - Synthea FHIR Synthetic Patients
 ```
 
-SHARP headers (`X-FHIR-Server-URL`, `X-Patient-ID`, `X-FHIR-Access-Token`) are extracted per-request and made available to tools via a context variable, enabling future FHIR-aware personalisation without requiring PHI.
+SHARP headers (`X-FHIR-Server-URL`, `X-Patient-ID`, `X-FHIR-Access-Token`) are extracted per-request and made available to tools via a context variable, enabling FHIR-aware patient-level analysis with synthetic data today and real EHR integration in production.
 
 ## Data Sources
 
@@ -47,10 +59,42 @@ SHARP headers (`X-FHIR-Server-URL`, `X-Patient-ID`, `X-FHIR-Access-Token`) are e
 | CMS Timely & Effective Care | ~10,000 | Operational performance measures |
 | CMS Complications & Deaths | ~5,000 | Complication rates and death measures |
 | CDC Social Vulnerability Index | ~3,200 | County-level SVI percentile scores |
+| Synthea FHIR Synthetic Patients | 1,002 resources | 100 patients with conditions, medications, encounters, observations |
 
-**Total: 233,000+ rows across 7 Domo datasets**
+**Total: 233,000+ rows across 7 Domo datasets + 100 synthetic FHIR patients (1,002 resources)**
 
-All data is publicly available CMS/CDC data. No Protected Health Information (PHI) is stored or processed.
+All CMS/CDC data is publicly available. Synthea data is fully synthetic. No Protected Health Information (PHI) is stored or processed.
+
+## Dashboard
+
+The Next.js dashboard provides eight pages of visual analytics, conversational AI, and export capabilities:
+
+| Page | What It Shows |
+|------|--------------|
+| **Hub** | Unified entry point with KPI cards, navigation to all analytics modules |
+| **Quality Overview** | Anomaly detection results, facility-level quality metrics |
+| **Equity Analysis** | SVI-correlated outcomes, disparity visualizations |
+| **Patient Experience** | HCAHPS survey results, patient satisfaction dimensions |
+| **Cost Efficiency** | Medicare spending vs. quality scatter plots, efficiency rankings |
+| **Executive Briefing** | AI-generated narrative briefings with PDF export via @react-pdf/renderer |
+| **Chat Interface** | Conversational access to all 11 MCP tools via Claude with tool routing |
+| **State Rankings** | Composite state performance scores with sortable tables |
+
+The chat interface uses the Anthropic SDK (`@anthropic-ai/sdk`) to route natural language questions to the appropriate MCP tool, returning structured results with AI-generated context.
+
+The executive briefing page generates narrative summaries from structured tool output and supports PDF export for offline sharing.
+
+## FHIR/Synthea Integration
+
+HealthPulse AI includes a synthetic patient data layer powered by Synthea FHIR bundles:
+
+- **100 synthetic patients** with realistic clinical histories (conditions, medications, encounters, observations)
+- **1,002 FHIR resources** loaded and indexed for patient-level analysis
+- **SHARP headers** propagate FHIR context (server URL, patient ID, access token) through every MCP request
+- **patient_risk_profile** tool generates comprehensive risk assessments from individual patient FHIR data
+- **patient_cohort_analysis** tool analyzes patient populations by condition, demographics, or risk level
+
+This demonstrates how the same MCP tools that analyze population-level CMS data can drill down to individual patients when connected to a FHIR-enabled EHR — bridging the gap between facility analytics and clinical decision support.
 
 ## Quick Start
 
@@ -92,13 +136,24 @@ python load_cms_data.py
 cd ../mcp-server
 python -m healthpulse_mcp.server
 # Server listens on http://0.0.0.0:8000/mcp
+
+# 6. Run the dashboard (optional)
+cd ../web
+npm install
+npm run dev
+# Dashboard at http://localhost:3000
 ```
 
 ### Running Tests
 
 ```bash
+# MCP server tests (212 tests)
 cd mcp-server
 pytest
+
+# Web dashboard tests (63 tests)
+cd web
+npm test
 ```
 
 ## MCP Tools Reference
@@ -216,11 +271,75 @@ Finds facilities with MULTIPLE simultaneous concerns across quality, readmission
 
 **Output:** Multi-concern facilities with concern_count, list of concerns, SVI data, systemic patterns detected.
 
+---
+
+### `patient_risk_profile`
+
+Generate a comprehensive risk profile for a synthetic FHIR patient.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `patient_id` | string | Yes | Synthea patient identifier |
+
+**Output:** `{ patient_demographics, active_conditions[], current_medications[], recent_encounters[], risk_factors[], risk_score }`
+
+Combines FHIR patient data with clinical risk assessment to produce actionable insights for care coordination.
+
+---
+
+### `patient_cohort_analysis`
+
+Analyze cohorts of synthetic patients by condition, age group, or risk level.
+
+**Input:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `condition` | string | `null` | Filter by clinical condition (e.g. `"diabetes"`) |
+| `age_group` | string | `null` | Filter by age range (e.g. `"65+"`) |
+| `risk_level` | string | `null` | Filter by risk level: `high`, `medium`, `low` |
+
+**Output:** `{ cohort_size, demographics_summary, condition_prevalence[], risk_distribution, intervention_opportunities[] }`
+
+---
+
+### `patient_experience`
+
+Analyze HCAHPS patient survey data to surface how patients rate their hospital care.
+
+**Input:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `state` | string | `null` | Two-letter US state code |
+| `dimension` | string | `"all"` | Survey dimension: `communication`, `responsiveness`, `environment`, `discharge`, `all` |
+
+**Output:** Facility-level patient satisfaction scores across survey dimensions with national comparisons.
+
+---
+
+### `cost_efficiency`
+
+Correlate Medicare spending per beneficiary with quality outcomes.
+
+**Input:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `state` | string | `null` | Two-letter US state code |
+| `quality_threshold` | float | `3.0` | Minimum star rating for "high quality" classification |
+
+**Output:** Spending-quality correlation analysis identifying high-efficiency and low-efficiency facilities.
+
 ## Deployment
 
-The server is deployed as a Docker container on Railway.
+The system has two deployment targets:
 
-**Production endpoint:** `https://health-pulse-mcp-production.up.railway.app/mcp`
+**MCP Server (Railway):** `https://health-pulse-mcp-production.up.railway.app/mcp`
+
+The MCP server is deployed as a Docker container on Railway. Railway auto-detects the Dockerfile and deploys on push. Environment variables are configured in Railway's dashboard.
 
 ```bash
 # Build locally
@@ -228,9 +347,9 @@ docker build -t healthpulse-mcp .
 docker run -p 8000:8000 --env-file mcp-server/.env healthpulse-mcp
 ```
 
-The `Dockerfile` at the project root copies the `mcp-server/` package and runs `python -m healthpulse_mcp.server`. Railway auto-detects the Dockerfile and deploys on push.
+**Dashboard (Vercel):** `https://web-umber-alpha-41.vercel.app`
 
-Environment variables are configured in Railway's dashboard. The server picks up `PORT` from the environment automatically.
+The Next.js dashboard is deployed on Vercel with automatic deployments from the `web/` directory. It connects to the Railway MCP server for data and uses the Anthropic SDK for the chat interface.
 
 ## Hackathon
 
@@ -247,15 +366,22 @@ Environment variables are configured in Railway's dashboard. The server picks up
 | MCP Framework | FastMCP (Python MCP SDK) |
 | Transport | Streamable HTTP, stateless mode |
 | Web Server | Uvicorn + Starlette |
-| Language | Python 3.11 |
+| Language (Server) | Python 3.11 |
+| Language (Dashboard) | TypeScript |
 | Data Platform | Domo (REST API + SQL query endpoint) |
-| Data Source | CMS Hospital Quality Data (public), CDC SVI |
-| Analytics | Z-score anomaly detection (custom implementation) |
+| Data Source | CMS Hospital Quality Data (public), CDC SVI, Synthea FHIR |
+| Analytics | Z-score anomaly detection, cross-cutting risk analysis, cohort analysis |
 | Healthcare Context | SHARP-on-MCP (X-FHIR-* headers) |
-| Dashboard | Next.js 16, TypeScript, Tailwind CSS |
-| Testing | pytest, pytest-asyncio (100+ unit tests) |
-| Deployment | Docker on Railway |
+| Dashboard | Next.js 16, TypeScript, Tailwind CSS, Recharts |
+| AI Chat | @anthropic-ai/sdk (Claude tool routing) |
+| PDF Export | @react-pdf/renderer |
+| Testing (Server) | pytest, pytest-asyncio (212 tests) |
+| Testing (Dashboard) | Vitest (63 tests) |
+| Deployment (MCP) | Docker on Railway |
+| Deployment (Dashboard) | Vercel |
 | Auth | Optional API key middleware |
+
+**Total: 275+ tests (212 MCP server + 63 web dashboard)**
 
 ## License
 

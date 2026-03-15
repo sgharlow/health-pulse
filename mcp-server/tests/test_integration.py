@@ -1,4 +1,4 @@
-"""Integration tests — verify all 9 tools are registered with valid metadata,
+"""Integration tests — verify all 11 tools are registered with valid metadata,
 plus API key middleware and SHARP middleware behaviour."""
 
 import asyncio
@@ -10,6 +10,7 @@ from healthpulse_mcp.server import mcp
 EXPECTED_TOOLS = {
     "quality_monitor",
     "care_gap_finder",
+    "cost_efficiency",
     "equity_detector",
     "facility_benchmark",
     "executive_briefing",
@@ -17,12 +18,13 @@ EXPECTED_TOOLS = {
     "cross_cutting_analysis",
     "patient_risk_profile",
     "patient_cohort_analysis",
+    "patient_experience",
 }
 
 
 @pytest.mark.asyncio
 async def test_all_tools_registered():
-    """All 9 healthcare analytics tools must be registered on the MCP server."""
+    """All 11 healthcare analytics tools must be registered on the MCP server."""
     tools = await mcp.list_tools()
     tool_names = {t.name for t in tools}
     assert EXPECTED_TOOLS == tool_names, (

@@ -100,11 +100,13 @@ class SharpMiddleware(BaseHTTPMiddleware):
 
 from healthpulse_mcp.tools import (
     care_gap_finder,
+    cost_efficiency,
     cross_cutting_analysis,
     equity_detector,
     executive_briefing,
     facility_benchmark,
     patient_cohort_analysis,
+    patient_experience,
     patient_risk_profile,
     quality_monitor,
     state_ranking,
@@ -162,6 +164,34 @@ async def care_gap_finder_tool(
         "state": state,
         "gap_type": gap_type,
         "min_excess_ratio": min_excess_ratio,
+    })
+
+
+@mcp.tool(
+    name="cost_efficiency",
+    description=(
+        "Analyze Medicare Spending Per Beneficiary (MSPB) efficiency across hospitals. "
+        "Identifies overspending facilities by comparing hospital spending to national averages, "
+        "and correlates cost data with CMS star ratings to flag high-cost low-quality facilities. "
+        "Critical for value-based care analysis."
+    ),
+)
+async def cost_efficiency_tool(
+    state: Optional[str] = None,
+    spending_threshold: float = 1.1,
+    limit: int = 20,
+) -> dict[str, Any]:
+    """
+    Args:
+        state: Optional two-letter US state code to filter results (e.g. 'CA', 'TX').
+        spending_threshold: Ratio of hospital spending to national average above which a facility is flagged as overspending. Default 1.1 (10% above national avg).
+        limit: Maximum number of overspending facilities to return. Default 20, max 100.
+    """
+    domo = _get_domo_client()
+    return await cost_efficiency.run(domo, {
+        "state": state,
+        "spending_threshold": spending_threshold,
+        "limit": limit,
     })
 
 
@@ -349,6 +379,38 @@ async def patient_cohort_analysis_tool(
     })
 
 
+@mcp.tool(
+    name="patient_experience",
+    description=(
+        "Analyze HCAHPS patient experience scores across hospitals. "
+        "Covers communication with nurses/doctors, staff responsiveness, "
+        "hospital environment (cleanliness/quietness), and overall rating. "
+        "Returns category averages, worst-performing facilities, and summary statistics. "
+        "HCAHPS scores affect CMS Value-Based Purchasing payments."
+    ),
+)
+async def patient_experience_tool(
+    measure: str = "all",
+    state: Optional[str] = None,
+    min_star_rating: Optional[float] = None,
+    limit: int = 20,
+) -> dict[str, Any]:
+    """
+    Args:
+        measure: HCAHPS measure category to analyze. One of: communication, responsiveness, environment, overall, all.
+        state: Optional two-letter US state code to filter results (e.g. 'CA', 'TX').
+        min_star_rating: Optional star rating ceiling — returns only facilities BELOW this rating to find worst performers.
+        limit: Maximum number of worst-performing facilities to return. Default 20.
+    """
+    domo = _get_domo_client()
+    return await patient_experience.run(domo, {
+        "state": state,
+        "measure": measure,
+        "min_star_rating": min_star_rating,
+        "limit": limit,
+    })
+
+
 # ---------------------------------------------------------------------------
 # MCP Resource registrations
 # ---------------------------------------------------------------------------
@@ -429,10 +491,21 @@ async def about_server() -> str:
                 "update_frequency": "Every 2 years",
                 "env_var": "HP_COMMUNITY_DATASET_ID",
             },
+            {
+                "name": "CMS Medicare Spending Per Beneficiary (MSPB)",
+                "description": (
+                    "Hospital-level Medicare spending per beneficiary including Part A and B "
+                    "spending during episodes of care. Compares facility spending to national "
+                    "averages for value-based purchasing assessment."
+                ),
+                "update_frequency": "Annual",
+                "env_var": "HP_COST_DATASET_ID",
+            },
         ],
         "tools": [
             "quality_monitor — Z-score anomaly detection across CMS quality measures",
             "care_gap_finder — Excess readmission ratios and worse-than-national quality flags",
+            "cost_efficiency — Medicare spending per beneficiary analysis with cost-quality correlation",
             "equity_detector — SVI correlation with facility outcomes for equity analysis",
             "facility_benchmark — Side-by-side comparison of specific facilities",
             "executive_briefing — Aggregated network-wide performance data with LLM prompt",
