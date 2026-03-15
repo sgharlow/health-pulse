@@ -16,7 +16,7 @@ from typing import Any, Optional
 logger = logging.getLogger(__name__)
 
 # Default data directory relative to project root
-_DEFAULT_DATA_DIR = Path(__file__).resolve().parents[4] / "data" / "synthea"
+_DEFAULT_DATA_DIR = Path(__file__).resolve().parents[3] / "data" / "synthea"
 
 
 class FHIRDataStore:
