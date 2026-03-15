@@ -1,4 +1,4 @@
-"""Integration tests — verify all 5 tools are registered with valid metadata,
+"""Integration tests — verify all 7 tools are registered with valid metadata,
 plus API key middleware and SHARP middleware behaviour."""
 
 import asyncio
@@ -13,12 +13,14 @@ EXPECTED_TOOLS = {
     "equity_detector",
     "facility_benchmark",
     "executive_briefing",
+    "state_ranking",
+    "cross_cutting_analysis",
 }
 
 
 @pytest.mark.asyncio
 async def test_all_five_tools_registered():
-    """All 5 healthcare analytics tools must be registered on the MCP server."""
+    """All 7 healthcare analytics tools must be registered on the MCP server."""
     tools = await mcp.list_tools()
     tool_names = {t.name for t in tools}
     assert EXPECTED_TOOLS == tool_names, (

@@ -1,6 +1,6 @@
 """HealthPulse AI MCP server entry point.
 
-Registers 5 healthcare analytics tools and 3 MCP resources via FastMCP and
+Registers 7 healthcare analytics tools and 3 MCP resources via FastMCP and
 exposes them over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
 """
 
@@ -99,10 +99,12 @@ class SharpMiddleware(BaseHTTPMiddleware):
 
 from healthpulse_mcp.tools import (
     care_gap_finder,
+    cross_cutting_analysis,
     equity_detector,
     executive_briefing,
     facility_benchmark,
     quality_monitor,
+    state_ranking,
 )
 
 
@@ -242,6 +244,55 @@ async def executive_briefing_tool(
     })
 
 
+@mcp.tool(
+    name="state_ranking",
+    description=(
+        "Rank all US states by composite healthcare performance. "
+        "Combines average CMS star rating and percentage of facilities worse than the national rate "
+        "into a single 0-100 composite score. Returns a ranked list showing the best or worst "
+        "performing states for network-level strategic planning."
+    ),
+)
+async def state_ranking_tool(
+    limit: int = 10,
+    order: str = "worst",
+) -> dict[str, Any]:
+    """
+    Args:
+        limit: Number of states to return (default 10, max 50).
+        order: Sort order for results. One of: best, worst. Default is 'worst' to surface highest-need states.
+    """
+    domo = _get_domo_client()
+    return await state_ranking.run(domo, {
+        "limit": limit,
+        "order": order,
+    })
+
+
+@mcp.tool(
+    name="cross_cutting_analysis",
+    description=(
+        "Find facilities with MULTIPLE simultaneous concerns across quality, readmissions, "
+        "equity, and CMS star ratings. Identifies systemic failures that siloed analysis misses — "
+        "the AI differentiator. A hospital with high readmissions AND low star rating AND serving "
+        "a high-poverty community requires fundamentally different intervention than one with a "
+        "single issue. Returns facilities sorted by number of compounding concerns."
+    ),
+)
+async def cross_cutting_analysis_tool(
+    state: Optional[str] = None,
+) -> dict[str, Any]:
+    """
+    Args:
+        state: Optional two-letter US state code to focus the analysis (e.g. 'TX', 'FL').
+               When omitted, analyzes all facilities nationwide.
+    """
+    domo = _get_domo_client()
+    return await cross_cutting_analysis.run(domo, {
+        "state": state,
+    })
+
+
 # ---------------------------------------------------------------------------
 # MCP Resource registrations
 # ---------------------------------------------------------------------------
@@ -329,6 +380,8 @@ async def about_server() -> str:
             "equity_detector — SVI correlation with facility outcomes for equity analysis",
             "facility_benchmark — Side-by-side comparison of specific facilities",
             "executive_briefing — Aggregated network-wide performance data with LLM prompt",
+            "state_ranking — Composite performance ranking across all 50 US states",
+            "cross_cutting_analysis — Multi-dimensional patterns across quality, equity, and readmissions",
         ],
         "sharp_support": True,
         "phi_handling": "No PHI — all data is de-identified CMS aggregate and CDC statistics",
