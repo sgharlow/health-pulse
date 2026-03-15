@@ -67,18 +67,17 @@ All CMS/CDC data is publicly available. Synthea data is fully synthetic. No Prot
 
 ## Dashboard
 
-The Next.js dashboard provides eight pages of visual analytics, conversational AI, and export capabilities:
+The Next.js dashboard provides 7 pages of visual analytics, conversational AI, and export capabilities:
 
 | Page | What It Shows |
 |------|--------------|
-| **Hub** | Unified entry point with KPI cards, navigation to all analytics modules |
-| **Quality Overview** | Anomaly detection results, facility-level quality metrics |
-| **Equity Analysis** | SVI-correlated outcomes, disparity visualizations |
-| **Patient Experience** | HCAHPS survey results, patient satisfaction dimensions |
-| **Cost Efficiency** | Medicare spending vs. quality scatter plots, efficiency rankings |
-| **Executive Briefing** | AI-generated narrative briefings with PDF export via @react-pdf/renderer |
-| **Chat Interface** | Conversational access to all 11 MCP tools via Claude with tool routing |
-| **State Rankings** | Composite state performance scores with sortable tables |
+| **Hub** (`/`) | Unified entry point linking Dashboard, Chat, and Prompt Opinion Marketplace |
+| **Dashboard** (`/dashboard`) | KPI cards, star distribution charts, quality flags across all states |
+| **Facilities** (`/facilities`) | Searchable, sortable facility table with ratings and detail drill-down |
+| **Compare** (`/compare`) | Side-by-side facility benchmarking with quality measure comparison |
+| **Equity** (`/equity`) | SVI-correlated outcomes, star-rating disparity between high/low-SVI communities |
+| **Briefing** (`/briefing`) | AI-generated narrative briefings with PDF export via @react-pdf/renderer |
+| **Chat** (`/chat`) | Conversational access to all 11 MCP tools via Claude with tool routing |
 
 The chat interface uses the Anthropic SDK (`@anthropic-ai/sdk`) to route natural language questions to the appropriate MCP tool, returning structured results with AI-generated context.
 
@@ -147,7 +146,7 @@ npm run dev
 ### Running Tests
 
 ```bash
-# MCP server tests (212 tests)
+# MCP server tests (243 tests)
 cd mcp-server
 pytest
 
@@ -275,33 +274,32 @@ Finds facilities with MULTIPLE simultaneous concerns across quality, readmission
 
 ### `patient_risk_profile`
 
-Generate a comprehensive risk profile for a synthetic FHIR patient.
+Generate a risk profile for a facility's patients or a specific synthetic FHIR patient.
 
 **Input:**
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `patient_id` | string | Yes | Synthea patient identifier |
+| `facility_id` | string | Yes | CMS facility CCN ID (e.g. `"050454"`) |
+| `patient_id` | string | No | Specific Synthea patient UUID; if omitted, returns facility-level risk summary. Also sourced from SHARP `X-Patient-ID` header. |
 
-**Output:** `{ patient_demographics, active_conditions[], current_medications[], recent_encounters[], risk_factors[], risk_score }`
-
-Combines FHIR patient data with clinical risk assessment to produce actionable insights for care coordination.
+**Output:** Single patient: `{ patient, conditions[], observations[], risk_factors[], readmission_risk }`. Facility: `{ total_patients, risk_distribution, high_risk_patients[] }`.
 
 ---
 
 ### `patient_cohort_analysis`
 
-Analyze cohorts of synthetic patients by condition, age group, or risk level.
+Analyze cohorts of synthetic patients at a facility by condition or risk level.
 
 **Input:**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `condition` | string | `null` | Filter by clinical condition (e.g. `"diabetes"`) |
-| `age_group` | string | `null` | Filter by age range (e.g. `"65+"`) |
-| `risk_level` | string | `null` | Filter by risk level: `high`, `medium`, `low` |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `facility_id` | string | Yes | CMS facility CCN ID (e.g. `"050454"`) |
+| `condition` | string | No | Filter by CMS condition group (e.g. `"heart-failure"`, `"diabetes"`, `"copd"`) |
+| `risk_level` | string | No | Filter by risk level: `high`, `medium`, `low` |
 
-**Output:** `{ cohort_size, demographics_summary, condition_prevalence[], risk_distribution, intervention_opportunities[] }`
+**Output:** `{ cohort, filters, readmission_indicators, cms_context, clinical_context }`
 
 ---
 
@@ -314,24 +312,27 @@ Analyze HCAHPS patient survey data to surface how patients rate their hospital c
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `state` | string | `null` | Two-letter US state code |
-| `dimension` | string | `"all"` | Survey dimension: `communication`, `responsiveness`, `environment`, `discharge`, `all` |
+| `measure` | string | `"all"` | Category: `communication`, `responsiveness`, `environment`, `overall`, `all` |
+| `min_star_rating` | float | `null` | Filter to facilities below this rating (find worst performers) |
+| `limit` | int | `20` | Max facilities to return |
 
-**Output:** Facility-level patient satisfaction scores across survey dimensions with national comparisons.
+**Output:** `{ total_facilities_analyzed, summary, worst_facilities[], category_averages, clinical_context, filters }`
 
 ---
 
 ### `cost_efficiency`
 
-Correlate Medicare spending per beneficiary with quality outcomes.
+Analyze Medicare spending per beneficiary and correlate with quality outcomes.
 
 **Input:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `state` | string | `null` | Two-letter US state code |
-| `quality_threshold` | float | `3.0` | Minimum star rating for "high quality" classification |
+| `spending_threshold` | float | `1.1` | Ratio above which a facility is flagged as overspending (1.0 = national avg) |
+| `limit` | int | `20` | Max overspenders to return |
 
-**Output:** Spending-quality correlation analysis identifying high-efficiency and low-efficiency facilities.
+**Output:** `{ total_facilities_analyzed, summary, overspenders[], cost_quality_correlation, clinical_context, filters }`
 
 ## Deployment
 
@@ -375,13 +376,13 @@ The Next.js dashboard is deployed on Vercel with automatic deployments from the 
 | Dashboard | Next.js 16, TypeScript, Tailwind CSS, Recharts |
 | AI Chat | @anthropic-ai/sdk (Claude tool routing) |
 | PDF Export | @react-pdf/renderer |
-| Testing (Server) | pytest, pytest-asyncio (212 tests) |
+| Testing (Server) | pytest, pytest-asyncio (243 tests) |
 | Testing (Dashboard) | Vitest (63 tests) |
 | Deployment (MCP) | Docker on Railway |
 | Deployment (Dashboard) | Vercel |
 | Auth | Optional API key middleware |
 
-**Total: 275+ tests (212 MCP server + 63 web dashboard)**
+**Total: 306 tests (243 MCP server + 63 web dashboard)**
 
 ## License
 

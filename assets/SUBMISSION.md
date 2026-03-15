@@ -75,7 +75,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 - **Architecture mirrors real healthcare BI + EHR patterns.** The pattern of a middleware server sitting between an AI platform and a clinical data warehouse is exactly how health systems are building AI-enabled workflows today. HealthPulse AI provides a reference implementation of that pattern using open standards.
 
 - **Production-grade engineering:**
-  - 275+ tests (212 MCP server pytest + 63 web dashboard Vitest) covering all 11 tools, analytics engine, SHARP context, Domo client, API routes, and UI components
+  - 306 tests (243 MCP server pytest + 63 web dashboard Vitest) covering all 11 tools, analytics engine, SHARP context, Domo client, API routes, and UI components
   - Docker deployment on Railway with public HTTPS endpoint (MCP server)
   - Vercel deployment with public URL (Next.js dashboard)
   - API key authentication middleware
@@ -84,7 +84,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 
 - **Unified access hub:**
   - Prompt Opinion marketplace for MCP tool invocation
-  - Next.js dashboard with 8 pages of visual analytics
+  - Next.js dashboard with 7 pages of visual analytics
   - Conversational chat interface with Claude tool routing
   - AI narrative briefing generation with PDF export
   - All three access points backed by the same 11 MCP tools and real data
@@ -109,7 +109,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 
 **Dashboard**
 - Next.js 16, TypeScript, Tailwind CSS, Recharts
-- 8 pages: Hub, Quality Overview, Equity Analysis, Patient Experience, Cost Efficiency, Executive Briefing, Chat Interface, State Rankings
+- 7 pages: Hub, Quality Overview, Equity Analysis, Patient Experience, Cost Efficiency, Executive Briefing, Chat Interface, State Rankings
 - 6 API routes connecting to MCP server
 - Claude-powered chat interface with tool routing (@anthropic-ai/sdk)
 - AI narrative briefing generation
@@ -132,7 +132,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 - Patient-level risk profiling from FHIR clinical data
 
 **Tests**
-- 275+ tests (212 MCP server + 63 web dashboard)
+- 306 tests (212 MCP server + 63 web dashboard)
 - MCP test files: `test_analytics.py`, `test_quality_monitor.py`, `test_care_gap_finder.py`, `test_equity_detector.py`, `test_facility_benchmark.py`, `test_executive_briefing.py`, `test_state_ranking.py`, `test_cross_cutting.py`, `test_validation.py`, `test_domo_client.py`, `test_sharp.py`, `test_integration.py`, `test_patient_risk_profile.py`, `test_patient_cohort.py`, `test_patient_experience.py`, `test_cost_efficiency.py`
 - Web tests: Vitest with component, API route, and integration tests
 - All tests pass with mocked Domo responses (no live API calls required in CI)

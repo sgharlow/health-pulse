@@ -134,7 +134,7 @@
 5. **HealthPulse MCP Server** queries Domo and FHIR data, runs analytics (Z-score, cross-cutting, cohort), returns structured results
 6. **Three access points** consume MCP tools:
    - Prompt Opinion Platform invokes tools via Streamable HTTP
-   - Next.js Dashboard visualizes results across 8 pages with AI briefing and PDF export
+   - Next.js Dashboard visualizes results across 7 pages with AI briefing and PDF export
    - Chat Interface routes natural language to tools via Claude SDK
 7. **User** asks questions in natural language, gets data-driven healthcare intelligence
 
@@ -155,6 +155,6 @@
 | Domo Datasets | 7 (233K+ rows) |
 | Synthetic FHIR Patients | 100 (1,002 resources) |
 | CMS Hospitals | 5,426 |
-| Tests | 275+ (212 MCP + 63 web) |
-| Dashboard Pages | 8 |
+| Tests | 306 (243 MCP + 63 web) |
+| Dashboard Pages | 7 |
 | API Routes | 6 |

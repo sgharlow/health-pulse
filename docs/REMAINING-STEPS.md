@@ -8,16 +8,8 @@
 
 ## Pre-Submission Checklist
 
-### 1. Disable Vercel Deployment Protection
-**Time:** 2 minutes
-**Why:** The dashboard returns 401 for public visitors due to Vercel's Deployment Protection.
-
-1. Go to https://vercel.com
-2. Open project **"web"** (steves-projects-a71becf4)
-3. Go to **Settings** > **Deployment Protection**
-4. Set production protection to **Disabled** (or "Only Preview Deployments")
-5. Save
-6. Verify by visiting: https://web-umber-alpha-41.vercel.app/dashboard
+### ~~1. Disable Vercel Deployment Protection~~ DONE
+SSO protection disabled via Vercel API on 2026-03-15. Dashboard is publicly accessible.
 
 ---
 
@@ -109,7 +101,7 @@ Type: `Compare UCSF Medical Center (050454) with NYU Langone (330214) and show m
    multi-factor analysis, patient risk profiling, cohort analysis,
    patient experience, and cost efficiency.
 
-   275+ tests. 233K+ rows real data. 100 synthetic FHIR patients.
+   306 tests. 233K+ rows real data. 100 synthetic FHIR patients.
    Conversational AI chat. PDF export. Deployed on Prompt Opinion, Railway, and Vercel.
 
    Built for the Agents Assemble Healthcare AI Hackathon on Prompt Opinion.
@@ -165,7 +157,7 @@ The text in `assets/SUBMISSION.md` is organized around the 3 judging criteria:
 
 1. **The AI Factor** — 11 MCP tools spanning 6 analytical dimensions, Z-score anomaly detection, cross-cutting multi-factor analysis, FHIR patient drill-down, conversational chat with Claude tool routing, AI narrative briefing with PDF export, HCAHPS patient experience, Medicare cost-quality correlation
 2. **Potential Impact** — $26B readmission costs, $500M+ CMS penalties, 100K+ preventable deaths. Found 94/222 FL hospitals with compounding concerns. Patient experience scores connecting to readmission rates. Cost-quality analysis proving efficiency and quality coexist.
-3. **Feasibility** — Zero PHI (all CMS/CDC public + Synthea synthetic), Domo enterprise platform, SHARP/MCP/FHIR open standards, 275+ tests, production deployment on Railway + Vercel, unified dashboard hub with 3 access modalities
+3. **Feasibility** — Zero PHI (all CMS/CDC public + Synthea synthetic), Domo enterprise platform, SHARP/MCP/FHIR open standards, 306 tests, production deployment on Railway + Vercel, unified dashboard hub with 3 access modalities
 
 ---
 
@@ -178,7 +170,6 @@ These can be added after initial submission (Devpost allows edits until deadline
 | Add real EHR FHIR endpoint integration | High — moves from synthetic to live patient data | 2-3 days |
 | Add predictive risk scoring model | High — forward-looking analytics | 2-3 days |
 | Add geographic map visualization | Medium — visual impact for judges | 1 day |
-| Add MCP tool result caching | Low — performance optimization | 1-2 hours |
 
 ---
 
@@ -202,9 +193,9 @@ These can be added after initial submission (Devpost allows edits until deadline
 | Domo Datasets | 7 (233K+ rows) |
 | Synthetic FHIR Patients | 100 (1,002 resources) |
 | CMS Hospitals | 5,426 |
-| Tests | 275+ (212 MCP + 63 web Vitest) |
-| Dashboard Pages | 8 |
+| Tests | 306 (243 MCP + 63 web Vitest) |
+| Dashboard Pages | 7 |
 | API Routes | 6 |
 | Chat Interface | Claude-powered conversational tool routing |
 | AI Briefing | Narrative generation with PDF export |
-| Commits | 23+ |
+| Commits | 30 |
