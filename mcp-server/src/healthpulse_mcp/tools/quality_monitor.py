@@ -5,6 +5,7 @@ from typing import Any
 
 from healthpulse_mcp.analytics import detect_anomalies
 from healthpulse_mcp.domo_client import DomoClient
+from healthpulse_mcp.validation import validate_state
 
 # Maps measure_group to CMS measure ID prefixes
 MEASURE_GROUP_PREFIXES: dict[str, list[str]] = {
@@ -33,7 +34,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     if not dataset_id:
         return {"error": "HP_QUALITY_DATASET_ID environment variable not set"}
 
-    state = args.get("state")
+    state = validate_state(args.get("state"))
     measure_group = args.get("measure_group", "all")
     threshold_sigma = float(args.get("threshold_sigma", 2.0))
 

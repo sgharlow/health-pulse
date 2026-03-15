@@ -4,6 +4,7 @@ import os
 from typing import Any
 
 from healthpulse_mcp.domo_client import DomoClient
+from healthpulse_mcp.validation import validate_facility_ids
 
 
 async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
@@ -29,7 +30,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     if not readmissions_id:
         return {"error": "HP_READMISSIONS_DATASET_ID environment variable not set"}
 
-    facility_ids: list[str] = args.get("facility_ids", [])
+    facility_ids: list[str] = validate_facility_ids(args.get("facility_ids", []))
     measures: list[str] = args.get("measures", [])
 
     if not facility_ids:

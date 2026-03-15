@@ -78,9 +78,9 @@ cp ../.env.example .env
 #   DOMO_CLIENT_SECRET
 #   HP_FACILITIES_DATASET_ID
 #   HP_QUALITY_DATASET_ID
-#   HP_READMISSION_DATASET_ID
+#   HP_READMISSIONS_DATASET_ID
 #   HP_COMMUNITY_DATASET_ID
-#   HP_HCAHPS_DATASET_ID
+#   HP_EXPERIENCE_DATASET_ID
 #   HP_API_KEY  (optional — enables auth)
 
 # 4. Load CMS data into Domo (one-time)
@@ -133,7 +133,7 @@ Identify facilities with excess readmissions or below-national-rate quality scor
 | `state` | string | `null` | Two-letter US state code |
 | `min_excess_ratio` | float | `1.05` | Minimum excess readmission ratio to flag |
 
-**Output:** `{ care_gaps[], total_found, filters }`
+**Output:** `{ gaps[], total_gaps, filters }`
 
 ---
 

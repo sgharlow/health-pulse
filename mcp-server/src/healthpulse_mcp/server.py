@@ -40,11 +40,22 @@ mcp = FastMCP(
 )
 
 
+_domo_client: DomoClient | None = None
+
+
 def _get_domo_client() -> DomoClient:
-    """Build DomoClient from environment variables."""
-    client_id = os.environ.get("DOMO_CLIENT_ID", "")
-    client_secret = os.environ.get("DOMO_CLIENT_SECRET", "")
-    return DomoClient(client_id=client_id, client_secret=client_secret)
+    """Return the module-level DomoClient singleton, creating it on first call.
+
+    Using a singleton preserves the OAuth token cache across tool calls,
+    avoiding redundant token-refresh round-trips to Domo.
+    """
+    global _domo_client
+    if _domo_client is None:
+        _domo_client = DomoClient(
+            client_id=os.environ.get("DOMO_CLIENT_ID", ""),
+            client_secret=os.environ.get("DOMO_CLIENT_SECRET", ""),
+        )
+    return _domo_client
 
 
 # ---------------------------------------------------------------------------

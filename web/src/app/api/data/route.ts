@@ -12,8 +12,8 @@ export async function GET(request: Request) {
     // Domo SQL does not support subqueries — fetch all data and filter in JS
     const stateFilter = state ? `WHERE state = '${state}'` : '';
     const [allFacilities, allQuality] = await Promise.all([
-      queryDomo(facId, `SELECT facility_id, facility_name, state, hospital_overall_rating FROM table ${stateFilter} LIMIT 500`),
-      queryDomo(qualId, `SELECT facility_id, measure_id, score, compared_to_national FROM table LIMIT 2000`),
+      queryDomo(facId, `SELECT facility_id, facility_name, state, hospital_overall_rating FROM table ${stateFilter} LIMIT 6000`),
+      queryDomo(qualId, `SELECT facility_id, measure_id, score, compared_to_national FROM table LIMIT 50000`),
     ]);
 
     // Filter quality records in JS to match facilities (avoids Domo subquery limitation)

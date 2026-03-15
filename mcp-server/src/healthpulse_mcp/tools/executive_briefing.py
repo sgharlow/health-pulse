@@ -5,6 +5,7 @@ from typing import Any
 
 from healthpulse_mcp.analytics import detect_anomalies
 from healthpulse_mcp.domo_client import DomoClient
+from healthpulse_mcp.validation import validate_facility_ids, validate_state
 
 
 async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
@@ -37,8 +38,8 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         return {"error": "HP_READMISSIONS_DATASET_ID environment variable not set"}
 
     scope = args.get("scope", "network")
-    state = args.get("state")
-    facility_ids: list[str] = args.get("facility_ids") or []
+    state = validate_state(args.get("state"))
+    facility_ids: list[str] = validate_facility_ids(args.get("facility_ids") or [])
     include_equity = bool(args.get("include_equity", True))
 
     # Build WHERE conditions based on scope.

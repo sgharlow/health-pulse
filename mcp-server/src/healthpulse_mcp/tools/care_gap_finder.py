@@ -4,6 +4,7 @@ import os
 from typing import Any
 
 from healthpulse_mcp.domo_client import DomoClient
+from healthpulse_mcp.validation import validate_state
 
 GAP_TYPE_SOURCES = {
     "readmission": ["readmissions"],
@@ -29,12 +30,13 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     readmissions_id = os.environ.get("HP_READMISSIONS_DATASET_ID")
     quality_id = os.environ.get("HP_QUALITY_DATASET_ID")
 
-    state = args.get("state")
+    state = validate_state(args.get("state"))
     gap_type = args.get("gap_type", "all")
     min_excess_ratio = float(args.get("min_excess_ratio", 1.05))
 
     sources = GAP_TYPE_SOURCES.get(gap_type, ["readmissions", "quality"])
 
+    # Build WHERE clause for datasets that have a 'state' column (readmissions, facilities)
     conditions = []
     if state:
         conditions.append(f"state = '{state}'")
@@ -73,13 +75,34 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         except Exception as exc:
             return {"error": f"Readmissions query failed: {exc}"}
 
-    # Query quality dataset for "Worse Than the National Rate" mortality/safety
+    # Query quality dataset for "Worse Than the National Rate" mortality/safety.
+    # Quality dataset has NO 'state' column — when state is provided, first fetch
+    # facility_ids from the facilities dataset, then filter quality data in Python.
     if "quality" in sources:
         if not quality_id:
             return {"error": "HP_QUALITY_DATASET_ID environment variable not set"}
+
+        # Resolve facility_ids for state filtering (same pattern as quality_monitor.py)
+        quality_facility_ids: set[str] | None = None
+        if state:
+            facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
+            if not facilities_id:
+                return {
+                    "error": (
+                        "HP_FACILITIES_DATASET_ID environment variable not set "
+                        "(required for state filter on quality data)"
+                    )
+                }
+            try:
+                fac_sql = f"SELECT facility_id FROM table WHERE state = '{state}'"
+                fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
+                quality_facility_ids = {str(r.get("facility_id")) for r in fac_rows}
+            except Exception as exc:
+                return {"error": f"Facilities query failed: {exc}"}
+
         try:
-            # Filter by measure prefix depending on gap_type
-            measure_conditions = list(conditions)
+            # Filter by measure prefix depending on gap_type — no state condition here
+            measure_conditions: list[str] = []
             if gap_type == "mortality":
                 measure_conditions.append("measure_id LIKE 'MORT_%'")
             elif gap_type == "safety":
@@ -99,6 +122,11 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 f"FROM table {q_where}"
             )
             rows = domo.query_as_dicts(quality_id, sql)
+
+            # Apply state filter in Python when needed
+            if quality_facility_ids is not None:
+                rows = [r for r in rows if str(r.get("facility_id")) in quality_facility_ids]
+
             for row in rows:
                 compared = str(row.get("compared_to_national", "") or "")
                 if "Worse" in compared:

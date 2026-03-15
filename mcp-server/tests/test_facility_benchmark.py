@@ -122,11 +122,11 @@ async def test_facility_benchmark_facility_not_in_dataset(
     )
 
     with patch.dict("os.environ", ENV):
-        result = await run(mock_domo, {"facility_ids": ["UNKNOWN_FAC"]})
+        result = await run(mock_domo, {"facility_ids": ["ZZZ999"]})
 
     assert result["comparison_count"] == 1
     fac = result["facilities"][0]
-    assert fac["facility_id"] == "UNKNOWN_FAC"
+    assert fac["facility_id"] == "ZZZ999"
     assert "note" in fac
 
 
