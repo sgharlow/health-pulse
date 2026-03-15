@@ -1,0 +1,1 @@
+"""HealthPulse MCP resource implementations."""
