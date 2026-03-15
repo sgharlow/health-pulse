@@ -105,16 +105,16 @@ def sample_readmission_rows():
 
 @pytest.fixture
 def sample_facilities_rows():
-    """Sample facility rows."""
+    """Sample facility rows matching actual Domo HP_FACILITIES_DATASET_ID column names."""
     return [
         {
             "facility_id": "100001",
             "facility_name": "General Hospital A",
             "state": "CA",
-            "city": "Los Angeles",
+            "city_town": "Los Angeles",
             "zip_code": "90001",
             "hospital_type": "Acute Care Hospitals",
-            "overall_rating": "4",
+            "hospital_overall_rating": "4",
             "emergency_services": "Yes",
             "county_fips": "06037",
         },
@@ -122,10 +122,10 @@ def sample_facilities_rows():
             "facility_id": "100002",
             "facility_name": "City Medical Center",
             "state": "CA",
-            "city": "San Francisco",
+            "city_town": "San Francisco",
             "zip_code": "94102",
             "hospital_type": "Acute Care Hospitals",
-            "overall_rating": "3",
+            "hospital_overall_rating": "3",
             "emergency_services": "Yes",
             "county_fips": "06075",
         },
@@ -133,10 +133,10 @@ def sample_facilities_rows():
             "facility_id": "100003",
             "facility_name": "Rural Health Clinic",
             "state": "CA",
-            "city": "Fresno",
+            "city_town": "Fresno",
             "zip_code": "93701",
             "hospital_type": "Critical Access Hospitals",
-            "overall_rating": "2",
+            "hospital_overall_rating": "2",
             "emergency_services": "Yes",
             "county_fips": "06019",
         },

@@ -8,6 +8,7 @@ from healthpulse_mcp.tools.quality_monitor import run
 
 ENV = {
     "HP_QUALITY_DATASET_ID": "quality-dataset-123",
+    "HP_FACILITIES_DATASET_ID": "facilities-dataset-123",
 }
 
 
@@ -57,17 +58,34 @@ async def test_quality_monitor_detects_outlier(mock_domo):
 
 
 @pytest.mark.asyncio
-async def test_quality_monitor_filters_by_state(mock_domo, sample_quality_rows):
-    """State filter is passed to Domo query."""
-    mock_domo.query_as_dicts.return_value = sample_quality_rows
+async def test_quality_monitor_filters_by_state(mock_domo, sample_quality_rows, sample_facilities_rows):
+    """State filter queries facilities dataset first, then filters quality data in Python.
+
+    Quality dataset has no 'state' column, so the state filter is applied by:
+    1. Querying the facilities dataset for facility_ids in the given state.
+    2. Filtering quality rows in Python using those facility_ids.
+    """
+    call_count = [0]
+
+    def side_effect(dataset_id, sql):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            # First call: facilities query for state filter
+            return sample_facilities_rows
+        # Second call: quality query (all rows, filtered in Python)
+        return sample_quality_rows
+
+    mock_domo.query_as_dicts.side_effect = side_effect
 
     with patch.dict("os.environ", ENV):
         result = await run(mock_domo, {"state": "CA", "measure_group": "all"})
 
     assert result["filters"]["state"] == "CA"
-    # Verify SQL contained state condition
-    call_sql = mock_domo.query_as_dicts.call_args[0][1]
-    assert "state = 'CA'" in call_sql
+    calls = mock_domo.query_as_dicts.call_args_list
+    # First call (facilities) must include state = 'CA'
+    assert "state = 'CA'" in calls[0][0][1]
+    # Second call (quality) must NOT have state in SQL (it uses facility_id filter in Python)
+    assert "state = 'CA'" not in calls[1][0][1]
 
 
 @pytest.mark.asyncio

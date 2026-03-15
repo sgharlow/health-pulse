@@ -39,11 +39,11 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     ids_quoted = ", ".join(f"'{fid}'" for fid in facility_ids)
     fac_where = f"WHERE facility_id IN ({ids_quoted})"
 
-    # Query facilities
+    # Query facilities — actual column names: city_town, hospital_overall_rating
     try:
         fac_sql = (
-            f"SELECT facility_id, facility_name, state, city, zip_code, "
-            f"hospital_type, overall_rating, emergency_services "
+            f"SELECT facility_id, facility_name, state, city_town, zip_code, "
+            f"hospital_type, hospital_overall_rating, emergency_services "
             f"FROM table {fac_where}"
         )
         fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
@@ -58,10 +58,10 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "facility_id": fid,
             "facility_name": row.get("facility_name"),
             "state": row.get("state"),
-            "city": row.get("city"),
+            "city_town": row.get("city_town"),
             "zip_code": row.get("zip_code"),
             "hospital_type": row.get("hospital_type"),
-            "overall_rating": row.get("overall_rating"),
+            "hospital_overall_rating": row.get("hospital_overall_rating"),
             "emergency_services": row.get("emergency_services"),
             "quality_measures": [],
             "readmission_measures": [],
@@ -74,10 +74,10 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 "facility_id": fid,
                 "facility_name": None,
                 "state": None,
-                "city": None,
+                "city_town": None,
                 "zip_code": None,
                 "hospital_type": None,
-                "overall_rating": None,
+                "hospital_overall_rating": None,
                 "emergency_services": None,
                 "quality_measures": [],
                 "readmission_measures": [],
@@ -91,8 +91,9 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             meas_quoted = ", ".join(f"'{m}'" for m in measures)
             quality_conditions.append(f"measure_id IN ({meas_quoted})")
         q_where = f"WHERE {' AND '.join(quality_conditions)}"
+        # Quality dataset columns: facility_id, measure_id, measure_name, score, compared_to_national
         quality_sql = (
-            f"SELECT facility_id, measure_id, score, compared_to_national, footnote "
+            f"SELECT facility_id, measure_id, measure_name, score, compared_to_national "
             f"FROM table {q_where}"
         )
         quality_rows = domo.query_as_dicts(quality_id, quality_sql)
@@ -104,9 +105,9 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         if fid in facilities_map:
             facilities_map[fid]["quality_measures"].append({
                 "measure_id": row.get("measure_id"),
+                "measure_name": row.get("measure_name"),
                 "score": row.get("score"),
                 "compared_to_national": row.get("compared_to_national"),
-                "footnote": row.get("footnote"),
             })
 
     # Query readmission measures for these facilities

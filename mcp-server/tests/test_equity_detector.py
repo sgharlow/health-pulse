@@ -151,7 +151,7 @@ async def test_equity_detector_equity_flags_capped_at_20(mock_domo):
     ]
     fac_rows = [
         {"facility_id": str(i), "facility_name": f"H{i}", "state": "TX",
-         "county_fips": str(i).zfill(5), "overall_rating": "3", "hospital_type": "Acute Care"}
+         "county_fips": str(i).zfill(5), "hospital_overall_rating": "3", "hospital_type": "Acute Care"}
         for i in range(1, 26)
     ]
     call_count = 0

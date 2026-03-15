@@ -93,8 +93,9 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 )
 
             q_where = f"WHERE {' AND '.join(measure_conditions)}" if measure_conditions else ""
+            # Quality dataset only has facility_id (no facility_name or state)
             sql = (
-                f"SELECT facility_id, facility_name, state, measure_id, compared_to_national, score "
+                f"SELECT facility_id, measure_id, compared_to_national, score "
                 f"FROM table {q_where}"
             )
             rows = domo.query_as_dicts(quality_id, sql)
@@ -110,8 +111,8 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                         "source": "quality",
                         "gap_type": "worse_than_national",
                         "facility_id": row.get("facility_id"),
-                        "facility_name": row.get("facility_name"),
-                        "state": row.get("state"),
+                        "facility_name": None,
+                        "state": None,
                         "measure_id": row.get("measure_id"),
                         "excess_ratio": 1.0,
                         "compared_to_national": compared,

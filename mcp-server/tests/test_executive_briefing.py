@@ -156,7 +156,12 @@ async def test_executive_briefing_does_not_call_llm(
 async def test_executive_briefing_state_scope_applies_filter(
     mock_domo, sample_facilities_rows, sample_quality_rows, sample_readmission_rows
 ):
-    """State scope passes state condition to queries."""
+    """State scope passes state condition to facilities and readmissions queries.
+
+    Quality dataset does NOT have a 'state' column, so the state filter for quality
+    is applied in Python (not in SQL). Facilities and readmissions queries must have
+    the state = 'CA' condition; the quality query must not.
+    """
     mock_domo.query_as_dicts.side_effect = _make_side_effect(
         sample_facilities_rows, sample_quality_rows, sample_readmission_rows
     )
@@ -166,8 +171,10 @@ async def test_executive_briefing_state_scope_applies_filter(
 
     assert result["filters"]["state"] == "CA"
     calls = mock_domo.query_as_dicts.call_args_list
-    for c in calls:
-        assert "state = 'CA'" in c[0][1]
+    # call 0 = facilities (has state), call 1 = quality (no state in SQL), call 2 = readmissions (has state)
+    assert "state = 'CA'" in calls[0][0][1], "Facilities query must include state filter"
+    assert "state = 'CA'" in calls[2][0][1], "Readmissions query must include state filter"
+    assert "state = 'CA'" not in calls[1][0][1], "Quality query must NOT include state in SQL (filtered in Python)"
 
 
 @pytest.mark.asyncio
@@ -199,7 +206,7 @@ async def test_executive_briefing_top_anomalies_capped_at_10(
         for i in range(1, 25)
     ]
     fac_rows = [
-        {"facility_id": str(i), "facility_name": f"H{i}", "state": "NY", "overall_rating": "3"}
+        {"facility_id": str(i), "facility_name": f"H{i}", "state": "NY", "hospital_overall_rating": "3"}
         for i in range(1, 25)
     ]
     mock_domo.query_as_dicts.side_effect = _make_side_effect(

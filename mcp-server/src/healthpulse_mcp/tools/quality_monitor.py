@@ -37,19 +37,32 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     measure_group = args.get("measure_group", "all")
     threshold_sigma = float(args.get("threshold_sigma", 2.0))
 
-    # Build WHERE clause
-    conditions = []
+    # Quality dataset does NOT have 'state' or 'facility_name'.
+    # If a state filter is requested, query facilities first to get facility_ids in that state,
+    # then filter quality data in Python.
+    quality_facility_ids: set[str] | None = None
     if state:
-        conditions.append(f"state = '{state}'")
+        facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
+        if not facilities_id:
+            return {"error": "HP_FACILITIES_DATASET_ID environment variable not set (required for state filter)"}
+        try:
+            fac_sql = f"SELECT facility_id FROM table WHERE state = '{state}'"
+            fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
+            quality_facility_ids = {str(r.get("facility_id")) for r in fac_rows}
+        except Exception as exc:
+            return {"error": f"Facilities query failed: {exc}"}
 
-    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-
-    sql = f"SELECT facility_id, facility_name, state, measure_id, score FROM table {where_clause}"
+    # Query quality dataset — only columns that exist in the actual schema
+    sql = "SELECT facility_id, measure_id, measure_name, score, compared_to_national FROM table"
 
     try:
         rows = domo.query_as_dicts(dataset_id, sql)
     except Exception as exc:
         return {"error": f"Query failed: {exc}"}
+
+    # Apply state filter in Python when needed
+    if quality_facility_ids is not None:
+        rows = [r for r in rows if str(r.get("facility_id")) in quality_facility_ids]
 
     # Filter by measure group
     prefixes = MEASURE_GROUP_PREFIXES.get(measure_group, [])

@@ -41,21 +41,31 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     facility_ids: list[str] = args.get("facility_ids") or []
     include_equity = bool(args.get("include_equity", True))
 
-    # Build WHERE conditions based on scope
-    conditions: list[str] = []
+    # Build WHERE conditions based on scope.
+    # Note: quality dataset does NOT have 'state' — for state-scoped queries we must
+    # first fetch facility_ids from facilities, then filter quality in Python.
+    fac_conditions: list[str] = []
+    readm_conditions: list[str] = []
+    quality_facility_ids: set[str] | None = None  # None means "no facility_id filter"
+
     if scope == "state" and state:
-        conditions.append(f"state = '{state}'")
+        fac_conditions.append(f"state = '{state}'")
+        readm_conditions.append(f"state = '{state}'")
+        # quality filter will be applied in Python after fetching facility_ids
     elif scope == "facility" and facility_ids:
         ids_quoted = ", ".join(f"'{fid}'" for fid in facility_ids)
-        conditions.append(f"facility_id IN ({ids_quoted})")
+        fac_conditions.append(f"facility_id IN ({ids_quoted})")
+        readm_conditions.append(f"facility_id IN ({ids_quoted})")
+        quality_facility_ids = set(facility_ids)
 
-    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+    fac_where = f"WHERE {' AND '.join(fac_conditions)}" if fac_conditions else ""
+    readm_where = f"WHERE {' AND '.join(readm_conditions)}" if readm_conditions else ""
 
-    # --- Facilities: count + avg star rating ---
+    # --- Facilities: count + avg star rating (actual column: hospital_overall_rating) ---
     try:
         fac_sql = (
-            f"SELECT facility_id, overall_rating, state "
-            f"FROM table {where_clause}"
+            f"SELECT facility_id, hospital_overall_rating, state "
+            f"FROM table {fac_where}"
         )
         fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
     except Exception as exc:
@@ -65,22 +75,30 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     ratings = []
     for row in fac_rows:
         try:
-            r = float(row.get("overall_rating", 0) or 0)
+            r = float(row.get("hospital_overall_rating", 0) or 0)
             if r > 0:
                 ratings.append(r)
         except (ValueError, TypeError):
             pass
     avg_star_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
 
-    # --- Quality: detect anomalies ---
+    # For state scope: derive quality_facility_ids from the facilities we just fetched
+    if scope == "state" and state:
+        quality_facility_ids = {str(r.get("facility_id")) for r in fac_rows}
+
+    # --- Quality: detect anomalies (quality dataset has no 'state' column) ---
     try:
         quality_sql = (
-            f"SELECT facility_id, measure_id, score, compared_to_national "
-            f"FROM table {where_clause}"
+            "SELECT facility_id, measure_id, score, compared_to_national "
+            "FROM table"
         )
         quality_rows = domo.query_as_dicts(quality_id, quality_sql)
     except Exception as exc:
         return {"error": f"Quality query failed: {exc}"}
+
+    # Apply facility_id filter in Python when scoping by state or facility list
+    if quality_facility_ids is not None:
+        quality_rows = [r for r in quality_rows if str(r.get("facility_id")) in quality_facility_ids]
 
     # Group by measure and detect anomalies
     measures: dict[str, list[dict[str, Any]]] = {}
@@ -102,7 +120,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     try:
         readm_sql = (
             f"SELECT facility_id, facility_name, state, measure_id, excess_readmission_ratio "
-            f"FROM table {where_clause}"
+            f"FROM table {readm_where}"
         )
         readm_rows = domo.query_as_dicts(readmissions_id, readm_sql)
     except Exception as exc:
@@ -141,7 +159,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         community_id = os.environ.get("HP_COMMUNITY_DATASET_ID")
         if community_id:
             try:
-                svi_sql = f"SELECT county_fips, svi_score FROM table {where_clause}"
+                svi_sql = "SELECT county_fips, svi_score FROM table"
                 svi_rows = domo.query_as_dicts(community_id, svi_sql)
                 high_svi_count = sum(
                     1 for r in svi_rows

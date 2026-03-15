@@ -23,7 +23,14 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     facilities_id = os.environ.get("HP_FACILITIES_DATASET_ID")
 
     if not community_id:
-        return {"error": "HP_COMMUNITY_DATASET_ID environment variable not set"}
+        return {
+            "error": "HP_COMMUNITY_DATASET_ID environment variable not set",
+            "note": (
+                "The community SVI dataset has not been created yet. "
+                "Load CDC Social Vulnerability Index data into Domo and set HP_COMMUNITY_DATASET_ID "
+                "to enable equity analysis."
+            ),
+        }
     if not facilities_id:
         return {"error": "HP_FACILITIES_DATASET_ID environment variable not set"}
 
@@ -59,7 +66,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     try:
         fac_sql = (
             f"SELECT facility_id, facility_name, state, county_fips, "
-            f"overall_rating, hospital_type "
+            f"hospital_overall_rating, hospital_type "
             f"FROM table {state_condition}"
         )
         fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
@@ -83,7 +90,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             continue
 
         try:
-            rating = float(fac.get("overall_rating", 0) or 0)
+            rating = float(fac.get("hospital_overall_rating", 0) or 0)
         except (ValueError, TypeError):
             rating = 0.0
 
@@ -96,7 +103,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 "state": fac.get("state"),
                 "county_fips": fips,
                 "svi_score": round(svi, 4),
-                "overall_rating": rating,
+                "hospital_overall_rating": rating,
                 "hospital_type": fac.get("hospital_type"),
                 "outcome_measure": outcome_measure,
                 "equity_flag": "high_vulnerability",
