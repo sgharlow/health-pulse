@@ -13,6 +13,12 @@ ENV_FULL = {
     "HP_COMMUNITY_DATASET_ID": "com-123",
 }
 
+ENV_ALL_SIX = {
+    **ENV_FULL,
+    "HP_EXPERIENCE_DATASET_ID": "exp-123",
+    "HP_COST_DATASET_ID": "cost-123",
+}
+
 ENV_NO_COM = {
     "HP_FACILITIES_DATASET_ID": "fac-123",
     "HP_QUALITY_DATASET_ID": "qual-123",
@@ -70,18 +76,47 @@ SAMPLE_SVI = [
     {"county_fips": "48029", "svi_score": "0.55", "poverty_rate": "12.0", "uninsured_rate": "9.0",  "minority_pct": "35.0"},
 ]
 
+SAMPLE_EXPERIENCE = [
+    # 100001: low patient experience (star rating 2.0 for overall measures)
+    {"facility_id": "100001", "patient_survey_star_rating": "2", "hcahps_answer_percent": "30"},
+    {"facility_id": "100001", "patient_survey_star_rating": "2", "hcahps_answer_percent": "25"},
+    # 100002: decent experience
+    {"facility_id": "100002", "patient_survey_star_rating": "4", "hcahps_answer_percent": "75"},
+    # 100003: great experience
+    {"facility_id": "100003", "patient_survey_star_rating": "5", "hcahps_answer_percent": "90"},
+]
 
-def _make_side_effect(fac_rows, qual_rows, readm_rows, svi_rows=None):
-    """Sequence four query calls: facilities, quality, readmissions, [SVI]."""
-    sequence = [fac_rows, qual_rows, readm_rows]
+SAMPLE_COST = [
+    # 100001: overspending (ratio 1.25 > 1.1)
+    {"facility_id": "100001", "score": "1.25"},
+    # 100002: slightly over but below threshold
+    {"facility_id": "100002", "score": "1.05"},
+    # 100003: efficient
+    {"facility_id": "100003", "score": "0.92"},
+]
+
+
+def _make_side_effect(fac_rows, qual_rows, readm_rows, svi_rows=None,
+                      exp_rows=None, cost_rows=None):
+    """Build a dataset-ID-based side effect for query_as_dicts.
+
+    Maps dataset IDs to their corresponding mock data so the order of
+    queries does not matter.
+    """
+    data_by_id = {
+        "fac-123": fac_rows,
+        "qual-123": qual_rows,
+        "readm-123": readm_rows,
+    }
     if svi_rows is not None:
-        sequence.append(svi_rows)
-    call_count = [0]
+        data_by_id["com-123"] = svi_rows
+    if exp_rows is not None:
+        data_by_id["exp-123"] = exp_rows
+    if cost_rows is not None:
+        data_by_id["cost-123"] = cost_rows
 
     def side_effect(dataset_id, sql):
-        idx = call_count[0]
-        call_count[0] += 1
-        return sequence[idx] if idx < len(sequence) else []
+        return data_by_id.get(dataset_id, [])
 
     return side_effect
 
@@ -172,9 +207,13 @@ async def test_cross_cutting_state_filter_passed_to_queries(mock_domo):
 
     assert result["filters"]["state"] == "TX"
     calls = mock_domo.query_as_dicts.call_args_list
-    # First call is facilities, third call is readmissions — both should have state filter
-    assert "WHERE state = 'TX'" in calls[0][0][1]
-    assert "WHERE state = 'TX'" in calls[2][0][1]
+    # Find the facilities call (fac-123) and readmissions call (readm-123) by dataset_id
+    fac_calls = [c for c in calls if c[0][0] == "fac-123"]
+    readm_calls = [c for c in calls if c[0][0] == "readm-123"]
+    assert fac_calls, "Expected a facilities query"
+    assert readm_calls, "Expected a readmissions query"
+    assert "WHERE state = 'TX'" in fac_calls[0][0][1]
+    assert "WHERE state = 'TX'" in readm_calls[0][0][1]
 
 
 @pytest.mark.asyncio
@@ -216,10 +255,145 @@ async def test_cross_cutting_capped_at_15_results(mock_domo):
         for i in range(1, 21)
     ]
 
-    mock_domo.query_as_dicts.side_effect = _make_side_effect(fac_rows, qual_rows, readm_rows)
+    # Use dataset-ID-based dispatch with custom IDs
+    data_by_id = {
+        "fac-123": fac_rows,
+        "qual-123": qual_rows,
+        "readm-123": readm_rows,
+    }
+    mock_domo.query_as_dicts.side_effect = lambda ds_id, sql: data_by_id.get(ds_id, [])
 
     with patch.dict("os.environ", ENV_NO_COM):
         result = await run(mock_domo, {})
 
     assert len(result["multi_concern_facilities"]) <= 15
     assert result["total_multi_concern"] == 20
+
+
+# --- New tests for patient experience and cost efficiency dimensions ---
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_includes_patient_experience_concern(mock_domo):
+    """Facility 100001 gets a patient experience concern when HCAHPS avg < 3.0."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI,
+        exp_rows=SAMPLE_EXPERIENCE, cost_rows=SAMPLE_COST,
+    )
+
+    with patch.dict("os.environ", ENV_ALL_SIX):
+        result = await run(mock_domo, {})
+
+    troubled = next(
+        f for f in result["multi_concern_facilities"] if f["facility_id"] == "100001"
+    )
+    experience_concerns = [c for c in troubled["concerns"] if "patient experience" in c.lower()]
+    assert len(experience_concerns) == 1
+    assert "avg HCAHPS score 2.0" in experience_concerns[0]
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_includes_cost_concern(mock_domo):
+    """Facility 100001 gets a cost overspending concern when MSPB ratio > 1.1."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI,
+        exp_rows=SAMPLE_EXPERIENCE, cost_rows=SAMPLE_COST,
+    )
+
+    with patch.dict("os.environ", ENV_ALL_SIX):
+        result = await run(mock_domo, {})
+
+    troubled = next(
+        f for f in result["multi_concern_facilities"] if f["facility_id"] == "100001"
+    )
+    cost_concerns = [c for c in troubled["concerns"] if "cost overspending" in c.lower()]
+    assert len(cost_concerns) == 1
+    assert "MSPB ratio 1.25" in cost_concerns[0]
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_six_dimensions_increase_concern_count(mock_domo):
+    """With all 6 dimensions, facility 100001 has more concerns than with 4."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI,
+        exp_rows=SAMPLE_EXPERIENCE, cost_rows=SAMPLE_COST,
+    )
+
+    with patch.dict("os.environ", ENV_ALL_SIX):
+        result = await run(mock_domo, {})
+
+    troubled = next(
+        f for f in result["multi_concern_facilities"] if f["facility_id"] == "100001"
+    )
+    # quality + readmissions + SVI + star rating + experience + cost = 6
+    assert troubled["concern_count"] == 6
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_no_experience_concern_for_good_facility(mock_domo):
+    """Facility 100003 (high HCAHPS scores) has no patient experience concern."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI,
+        exp_rows=SAMPLE_EXPERIENCE, cost_rows=SAMPLE_COST,
+    )
+
+    with patch.dict("os.environ", ENV_ALL_SIX):
+        result = await run(mock_domo, {})
+
+    facility_ids = [f["facility_id"] for f in result["multi_concern_facilities"]]
+    # 100003 should still not appear — all its scores are good
+    assert "100003" not in facility_ids
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_no_cost_concern_below_threshold(mock_domo):
+    """Facility 100002 (MSPB ratio 1.05, below 1.1) has no cost concern."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI,
+        exp_rows=SAMPLE_EXPERIENCE, cost_rows=SAMPLE_COST,
+    )
+
+    with patch.dict("os.environ", ENV_ALL_SIX):
+        result = await run(mock_domo, {})
+
+    # 100002 has only 1 quality flag (not enough) and MSPB 1.05 (below threshold)
+    # So it should not appear in multi-concern (at most 0 concerns that trigger)
+    facility_ids = [f["facility_id"] for f in result["multi_concern_facilities"]]
+    assert "100002" not in facility_ids
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_skips_experience_when_env_not_set(mock_domo):
+    """When HP_EXPERIENCE_DATASET_ID is not set, experience dimension is skipped."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI
+    )
+
+    with patch.dict("os.environ", ENV_FULL):
+        result = await run(mock_domo, {})
+
+    assert "error" not in result
+    # Should still work with 4 dimensions
+    troubled = next(
+        f for f in result["multi_concern_facilities"] if f["facility_id"] == "100001"
+    )
+    experience_concerns = [c for c in troubled["concerns"] if "patient experience" in c.lower()]
+    assert len(experience_concerns) == 0
+
+
+@pytest.mark.asyncio
+async def test_cross_cutting_skips_cost_when_env_not_set(mock_domo):
+    """When HP_COST_DATASET_ID is not set, cost dimension is skipped."""
+    mock_domo.query_as_dicts.side_effect = _make_side_effect(
+        SAMPLE_FACILITIES, SAMPLE_QUALITY_WORSE, SAMPLE_READMISSIONS, SAMPLE_SVI
+    )
+
+    with patch.dict("os.environ", ENV_FULL):
+        result = await run(mock_domo, {})
+
+    assert "error" not in result
+    troubled = next(
+        f for f in result["multi_concern_facilities"] if f["facility_id"] == "100001"
+    )
+    cost_concerns = [c for c in troubled["concerns"] if "cost overspending" in c.lower()]
+    assert len(cost_concerns) == 0

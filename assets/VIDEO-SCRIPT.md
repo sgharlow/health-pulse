@@ -126,6 +126,6 @@ HealthPulse AI. Built for the Agents Assemble Healthcare AI Hackathon.
 
 - Total narration: approximately 2 minutes 55 seconds at natural speaking pace
 - All data shown is real CMS data, not mocked or fabricated
-- Key numbers to emphasize: 5,426 hospitals, 450 quality flags, 0.77 star disparity, 48% excess readmissions, 306 tests, 11 tools
+- Key numbers to emphasize: 5,426 hospitals, 450 quality flags, 0.77 star disparity, 48% excess readmissions, 313 tests, 11 tools
 - Tone: professional, data-driven, understated confidence — let the numbers speak
 - For NotebookLM: paste this entire script as source material and request a "3-minute product demo narration in a professional, documentary tone"

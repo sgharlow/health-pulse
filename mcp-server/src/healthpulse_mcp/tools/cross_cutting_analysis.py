@@ -8,8 +8,28 @@ from healthpulse_mcp.domo_client import DomoClient
 from healthpulse_mcp.validation import validate_state
 
 
+def _safe_float(value: Any) -> float | None:
+    """Convert a value to float, returning None if not parseable."""
+    if value is None:
+        return None
+    if isinstance(value, str) and value.strip().lower().startswith("not "):
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
 async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
-    """Find facilities with MULTIPLE simultaneous concerns (quality + equity + readmissions).
+    """Find facilities with MULTIPLE simultaneous concerns across 6 dimensions.
+
+    Dimensions checked:
+      1. Quality — worse-than-national quality measures
+      2. Readmissions — excess readmission ratios > 1.05
+      3. SVI equity — high social vulnerability index (>= 0.75)
+      4. Star rating — CMS overall rating of 1 or 2
+      5. Patient experience — low HCAHPS scores (avg star rating < 3.0)
+      6. Cost efficiency — MSPB spending ratio > 1.1 (10%+ above national avg)
 
     This is the tool that demonstrates AI's unique value — connecting dots across
     siloed data sources to identify systemic failures that individual metrics miss.
@@ -87,6 +107,53 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             except (ValueError, TypeError):
                 pass
 
+    # Get patient experience data (HCAHPS) — optional dimension
+    exp_id = os.environ.get("HP_EXPERIENCE_DATASET_ID", "")
+    experience_avg: dict[str, float] = {}
+    if exp_id:
+        try:
+            exp_rows = domo.query_as_dicts(
+                exp_id,
+                "SELECT facility_id, patient_survey_star_rating, hcahps_answer_percent "
+                "FROM table",
+            )
+            # Filter to facilities in our set
+            exp_rows = [r for r in exp_rows if r.get("facility_id") in fac_ids]
+
+            # Compute per-facility average score (star rating preferred, else answer pct)
+            fac_exp_scores: dict[str, list[float]] = {}
+            for r in exp_rows:
+                fid_e = r.get("facility_id", "")
+                score = _safe_float(r.get("patient_survey_star_rating"))
+                if score is None:
+                    score = _safe_float(r.get("hcahps_answer_percent"))
+                if score is not None:
+                    fac_exp_scores.setdefault(fid_e, []).append(score)
+
+            for fid_e, scores in fac_exp_scores.items():
+                if scores:
+                    experience_avg[fid_e] = round(sum(scores) / len(scores), 2)
+        except Exception:
+            pass  # Skip dimension on error
+
+    # Get cost efficiency data (MSPB) — optional dimension
+    cost_id = os.environ.get("HP_COST_DATASET_ID", "")
+    cost_ratios: dict[str, float] = {}
+    if cost_id:
+        try:
+            cost_rows = domo.query_as_dicts(
+                cost_id,
+                "SELECT facility_id, score FROM table",
+            )
+            for r in cost_rows:
+                fid_c = r.get("facility_id", "")
+                if fid_c in fac_ids:
+                    ratio = _safe_float(r.get("score"))
+                    if ratio is not None:
+                        cost_ratios[fid_c] = round(ratio, 2)
+        except Exception:
+            pass  # Skip dimension on error
+
     # Cross-cutting: find facilities with MULTIPLE concerns
     multi_concern = []
     for fid, fac in fac_lookup.items():
@@ -130,6 +197,20 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             rating = 0
         if rating > 0 and rating <= 2:
             concerns.append(f"Low CMS star rating: {int(rating)} of 5")
+            concern_count += 1
+
+        # Check patient experience (HCAHPS)
+        exp_score = experience_avg.get(fid)
+        if exp_score is not None and exp_score < 3.0:
+            concerns.append(f"Low patient experience: avg HCAHPS score {exp_score}")
+            concern_count += 1
+
+        # Check cost efficiency (MSPB)
+        mspb_ratio = cost_ratios.get(fid)
+        if mspb_ratio is not None and mspb_ratio > 1.1:
+            concerns.append(
+                f"Cost overspending: MSPB ratio {mspb_ratio} (10%+ above national avg)"
+            )
             concern_count += 1
 
         if concern_count >= 2:

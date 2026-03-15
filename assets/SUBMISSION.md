@@ -75,7 +75,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 - **Architecture mirrors real healthcare BI + EHR patterns.** The pattern of a middleware server sitting between an AI platform and a clinical data warehouse is exactly how health systems are building AI-enabled workflows today. HealthPulse AI provides a reference implementation of that pattern using open standards.
 
 - **Production-grade engineering:**
-  - 306 tests (243 MCP server pytest + 63 web dashboard Vitest) covering all 11 tools, analytics engine, SHARP context, Domo client, API routes, and UI components
+  - 313 tests (250 MCP server pytest + 63 web dashboard Vitest) covering all 11 tools, analytics engine, SHARP context, Domo client, API routes, and UI components
   - Docker deployment on Railway with public HTTPS endpoint (MCP server)
   - Vercel deployment with public URL (Next.js dashboard)
   - API key authentication middleware
@@ -132,7 +132,7 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 - Patient-level risk profiling from FHIR clinical data
 
 **Tests**
-- 306 tests (212 MCP server + 63 web dashboard)
+- 313 tests (250 MCP server + 63 web dashboard)
 - MCP test files: `test_analytics.py`, `test_quality_monitor.py`, `test_care_gap_finder.py`, `test_equity_detector.py`, `test_facility_benchmark.py`, `test_executive_briefing.py`, `test_state_ranking.py`, `test_cross_cutting.py`, `test_validation.py`, `test_domo_client.py`, `test_sharp.py`, `test_integration.py`, `test_patient_risk_profile.py`, `test_patient_cohort.py`, `test_patient_experience.py`, `test_cost_efficiency.py`
 - Web tests: Vitest with component, API route, and integration tests
 - All tests pass with mocked Domo responses (no live API calls required in CI)

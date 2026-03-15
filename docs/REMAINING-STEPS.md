@@ -101,7 +101,7 @@ Type: `Compare UCSF Medical Center (050454) with NYU Langone (330214) and show m
    multi-factor analysis, patient risk profiling, cohort analysis,
    patient experience, and cost efficiency.
 
-   306 tests. 233K+ rows real data. 100 synthetic FHIR patients.
+   313 tests. 233K+ rows real data. 100 synthetic FHIR patients.
    Conversational AI chat. PDF export. Deployed on Prompt Opinion, Railway, and Vercel.
 
    Built for the Agents Assemble Healthcare AI Hackathon on Prompt Opinion.
@@ -157,7 +157,7 @@ The text in `assets/SUBMISSION.md` is organized around the 3 judging criteria:
 
 1. **The AI Factor** — 11 MCP tools spanning 6 analytical dimensions, Z-score anomaly detection, cross-cutting multi-factor analysis, FHIR patient drill-down, conversational chat with Claude tool routing, AI narrative briefing with PDF export, HCAHPS patient experience, Medicare cost-quality correlation
 2. **Potential Impact** — $26B readmission costs, $500M+ CMS penalties, 100K+ preventable deaths. Found 94/222 FL hospitals with compounding concerns. Patient experience scores connecting to readmission rates. Cost-quality analysis proving efficiency and quality coexist.
-3. **Feasibility** — Zero PHI (all CMS/CDC public + Synthea synthetic), Domo enterprise platform, SHARP/MCP/FHIR open standards, 306 tests, production deployment on Railway + Vercel, unified dashboard hub with 3 access modalities
+3. **Feasibility** — Zero PHI (all CMS/CDC public + Synthea synthetic), Domo enterprise platform, SHARP/MCP/FHIR open standards, 313 tests, production deployment on Railway + Vercel, unified dashboard hub with 3 access modalities
 
 ---
 
@@ -193,7 +193,7 @@ These can be added after initial submission (Devpost allows edits until deadline
 | Domo Datasets | 7 (233K+ rows) |
 | Synthetic FHIR Patients | 100 (1,002 resources) |
 | CMS Hospitals | 5,426 |
-| Tests | 306 (243 MCP + 63 web Vitest) |
+| Tests | 313 (250 MCP + 63 web Vitest) |
 | Dashboard Pages | 7 |
 | API Routes | 6 |
 | Chat Interface | Claude-powered conversational tool routing |

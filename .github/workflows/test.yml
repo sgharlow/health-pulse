@@ -1,0 +1,52 @@
+name: HealthPulse AI Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  mcp-server-tests:
+    name: MCP Server Tests (Python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    env:
+      HP_FACILITIES_DATASET_ID: test
+      HP_QUALITY_DATASET_ID: test
+      HP_READMISSIONS_DATASET_ID: test
+      HP_SAFETY_DATASET_ID: test
+      HP_EXPERIENCE_DATASET_ID: test
+      HP_COST_DATASET_ID: test
+      HP_COMMUNITY_DATASET_ID: test
+      DOMO_CLIENT_ID: test
+      DOMO_CLIENT_SECRET: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+      - name: Run pytest
+        run: pytest
+
+  web-dashboard-tests:
+    name: Web Dashboard Tests (Node.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test

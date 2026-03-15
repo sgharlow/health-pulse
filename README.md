@@ -1,5 +1,7 @@
 # HealthPulse AI
 
+![Tests](https://github.com/sgharlow/health-pulse/actions/workflows/test.yml/badge.svg)
+
 > Healthcare Performance Intelligence MCP Server + Dashboard
 
 HealthPulse AI is a Model Context Protocol (MCP) server and Next.js dashboard that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities and 100 synthetic FHIR patients. It gives AI agents eleven analytics tools spanning quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, executive briefing generation, state-level ranking, cross-cutting multi-factor risk analysis, patient-level risk profiling, cohort analysis, patient experience scoring, and cost efficiency analysis — all backed by real public data loaded into Domo, synthetic FHIR patient data from Synthea, and served over a production HTTPS endpoint with a conversational chat interface and AI narrative briefing.
@@ -12,11 +14,27 @@ HealthPulse AI is a Model Context Protocol (MCP) server and Next.js dashboard th
 - **facility_benchmark** — Benchmarks specific hospitals against each other across quality measures and readmission rates given a list of CMS facility IDs.
 - **executive_briefing** — Aggregates quality anomalies, readmission gaps, and equity indicators into a structured data package with a `suggested_prompt` field ready for LLM narrative generation (the server itself never calls an LLM).
 - **state_ranking** — Ranks all US states by composite healthcare performance score combining star ratings, worse-than-national rates, and facility counts.
-- **cross_cutting_analysis** — Finds facilities with multiple simultaneous concerns across quality, readmissions, equity, and star ratings. Identifies compounding risk factors invisible in siloed analysis.
+- **cross_cutting_analysis** — Finds facilities with multiple simultaneous concerns across 6 dimensions: quality, readmissions, equity, patient experience, cost efficiency, and star ratings. Identifies compounding risk factors invisible in siloed analysis.
 - **patient_risk_profile** — Generates a comprehensive risk profile for a synthetic FHIR patient including active conditions, medications, recent encounters, and risk factors derived from clinical data.
 - **patient_cohort_analysis** — Analyzes cohorts of synthetic patients by condition, age group, or risk level to identify population health trends and intervention opportunities.
 - **patient_experience** — Analyzes HCAHPS patient survey data to surface how patients rate their hospital care across communication, responsiveness, environment, and discharge planning dimensions.
 - **cost_efficiency** — Correlates Medicare spending per beneficiary with quality outcomes to identify facilities delivering high-quality care at lower cost and those with spending-quality misalignment.
+
+## Key Findings from Real Data
+
+These are not synthetic examples. HealthPulse AI discovered these patterns from 233,000+ rows of real CMS hospital quality data:
+
+- **450 quality measures** rated worse than national benchmarks across 5,426 US hospitals, with California, New York, and Florida carrying the highest concentration of low-rated facilities.
+
+- **0.77-star rating disparity** between hospitals in high-vulnerability communities (SVI >= 0.75, avg 2.75 stars) and low-vulnerability communities (SVI < 0.25, avg 3.53 stars) — a systemic equity gap affecting 1,708 facilities serving vulnerable populations.
+
+- **48% excess hip/knee readmissions** at UCI Health - Los Alamitos, 43% excess at Providence St. Mary Medical Center and Oroville Hospital — specific, actionable care gaps identified by the care_gap_finder tool.
+
+- **52.2% of overspending California hospitals** also have below-average star ratings, suggesting that higher Medicare spending does not correlate with better quality outcomes.
+
+- **94 of 222 Florida hospitals (42%)** have two or more simultaneous concerns spanning quality, readmissions, equity, and star ratings — compounding risk factors invisible in any single-dimension analysis.
+
+Every number above came from a single MCP tool call against real, public CMS data.
 
 ## Architecture
 
@@ -376,13 +394,13 @@ The Next.js dashboard is deployed on Vercel with automatic deployments from the 
 | Dashboard | Next.js 16, TypeScript, Tailwind CSS, Recharts |
 | AI Chat | @anthropic-ai/sdk (Claude tool routing) |
 | PDF Export | @react-pdf/renderer |
-| Testing (Server) | pytest, pytest-asyncio (243 tests) |
+| Testing (Server) | pytest, pytest-asyncio (250 tests) |
 | Testing (Dashboard) | Vitest (63 tests) |
 | Deployment (MCP) | Docker on Railway |
 | Deployment (Dashboard) | Vercel |
 | Auth | Optional API key middleware |
 
-**Total: 306 tests (243 MCP server + 63 web dashboard)**
+**Total: 313 tests (250 MCP server + 63 web dashboard)**
 
 ## License
 
