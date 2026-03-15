@@ -6,6 +6,9 @@ WORKDIR /app
 COPY mcp-server/pyproject.toml mcp-server/pyproject.toml
 COPY mcp-server/src/ mcp-server/src/
 
+# Copy synthetic patient data for FHIR tools
+COPY data/synthea/ data/synthea/
+
 RUN pip install --no-cache-dir ./mcp-server
 
 EXPOSE 8000
