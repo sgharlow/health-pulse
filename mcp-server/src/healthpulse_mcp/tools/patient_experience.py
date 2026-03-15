@@ -28,13 +28,31 @@ def _classify_measure(measure_id: str) -> str | None:
 
 
 def _safe_float(value: Any) -> float | None:
-    """Convert a value to float, returning None if not parseable."""
+    """Convert a value to float, returning None if not parseable.
+
+    Handles special values like "Not Applicable" and "Not Available" that
+    appear in CMS HCAHPS data.
+    """
     if value is None:
+        return None
+    if isinstance(value, str) and value.strip().lower().startswith("not "):
         return None
     try:
         return float(value)
     except (ValueError, TypeError):
         return None
+
+
+def _get_score(row: dict[str, Any]) -> float | None:
+    """Extract the best available numeric score from an HCAHPS row.
+
+    Tries patient_survey_star_rating first. If that is non-numeric
+    (e.g. "Not Applicable"), falls back to hcahps_answer_percent.
+    """
+    star = _safe_float(row.get("patient_survey_star_rating"))
+    if star is not None:
+        return star
+    return _safe_float(row.get("hcahps_answer_percent"))
 
 
 async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
@@ -87,7 +105,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             return {"error": f"Facilities query failed: {exc}"}
 
     # Query HCAHPS dataset
-    sql = "SELECT facility_id, hcahps_measure_id, star_rating, answer_percent, patient_survey_star_rating FROM table"
+    sql = "SELECT facility_id, hcahps_measure_id, patient_survey_star_rating, hcahps_answer_percent, hcahps_question, number_of_completed_surveys FROM table"
 
     try:
         rows = domo.query_as_dicts(dataset_id, sql)
@@ -114,7 +132,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     if min_star_rating is not None:
         filtered = []
         for cat, row in classified_rows:
-            sr = _safe_float(row.get("star_rating"))
+            sr = _get_score(row)
             if sr is not None and sr < min_star_rating:
                 filtered.append((cat, row))
         classified_rows = filtered
@@ -122,7 +140,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     # Compute category averages
     category_scores: dict[str, list[float]] = {}
     for cat, row in classified_rows:
-        sr = _safe_float(row.get("star_rating"))
+        sr = _get_score(row)
         if sr is not None:
             category_scores.setdefault(cat, []).append(sr)
 
@@ -136,7 +154,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     facility_measures: dict[str, dict[str, float]] = {}
     for cat, row in classified_rows:
         fid = str(row.get("facility_id", ""))
-        sr = _safe_float(row.get("star_rating"))
+        sr = _get_score(row)
         if sr is not None and fid:
             facility_scores.setdefault(fid, []).append(sr)
             # Track per-category score for this facility

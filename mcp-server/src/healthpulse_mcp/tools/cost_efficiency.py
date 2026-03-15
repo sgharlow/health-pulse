@@ -12,7 +12,7 @@ def _safe_float(value: Any) -> Optional[float]:
     """Convert value to float, return None on failure."""
     try:
         v = float(value)
-        return round(v, 2)
+        return round(v, 4)
     except (ValueError, TypeError):
         return None
 
@@ -55,43 +55,40 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     spending_threshold = float(args.get("spending_threshold", 1.1))
     limit = min(int(args.get("limit", 20)), 100)
 
-    # Build state condition for facility query
+    # Build state condition for cost query (cost dataset has state column)
     state_condition = f"WHERE state = '{state}'" if state else ""
 
-    # Query cost efficiency data
+    # Query cost efficiency data — the score column IS the spending ratio
+    # (hospital spending / national average). 1.0 = national avg, >1.0 = overspending.
     try:
-        cost_sql = "SELECT facility_id, score, avg_spending_hospital, avg_spending_national FROM table"
+        cost_sql = (
+            f"SELECT facility_id, facility_name, state, score "
+            f"FROM table {state_condition}"
+        )
         cost_rows = domo.query_as_dicts(cost_id, cost_sql)
     except Exception as exc:
         return {"error": f"Cost efficiency query failed: {exc}"}
 
-    # Query facilities for names, state, and star ratings
+    # Query facilities for star ratings (hospital_overall_rating) for cost-quality correlation
+    fac_state_condition = f"WHERE state = '{state}'" if state else ""
     try:
         fac_sql = (
-            f"SELECT facility_id, facility_name, state, hospital_overall_rating "
-            f"FROM table {state_condition}"
+            f"SELECT facility_id, hospital_overall_rating "
+            f"FROM table {fac_state_condition}"
         )
         fac_rows = domo.query_as_dicts(facilities_id, fac_sql)
     except Exception as exc:
         return {"error": f"Facilities query failed: {exc}"}
 
-    # Build facility lookup by ID
-    fac_by_id: dict[str, dict[str, Any]] = {}
+    # Build star rating lookup by facility_id
+    star_by_id: dict[str, Any] = {}
     for fac in fac_rows:
         fid = str(fac.get("facility_id", "") or "")
         if fid:
-            fac_by_id[fid] = {
-                "facility_name": fac.get("facility_name"),
-                "state": fac.get("state"),
-                "star_rating": fac.get("hospital_overall_rating"),
-            }
-
-    # If state filter is active, only include cost rows for facilities in that state
-    facility_id_set = set(fac_by_id.keys()) if state else None
+            star_by_id[fid] = fac.get("hospital_overall_rating")
 
     # Compute spending ratios and classify
     all_ratios: list[float] = []
-    all_national_avgs: list[float] = []
     overspenders: list[dict[str, Any]] = []
     highest_ratio = 0.0
     highest_facility = ""
@@ -107,25 +104,19 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
         if not fid:
             continue
 
-        # If state filter, skip facilities not in the state
-        if facility_id_set is not None and fid not in facility_id_set:
+        # The score column is already the spending ratio
+        ratio = _safe_float(row.get("score"))
+        if ratio is None:
             continue
 
-        hospital_spending = _safe_float(row.get("avg_spending_hospital"))
-        national_avg = _safe_float(row.get("avg_spending_national"))
-
-        if hospital_spending is None or national_avg is None or national_avg == 0:
-            continue
-
-        ratio = round(hospital_spending / national_avg, 4)
         all_ratios.append(ratio)
-        all_national_avgs.append(national_avg)
 
-        # Get facility info
-        fac_info = fac_by_id.get(fid, {})
-        fac_name = fac_info.get("facility_name", "Unknown")
-        fac_state = fac_info.get("state", "Unknown")
-        star_rating_raw = fac_info.get("star_rating")
+        # Get facility info from the cost dataset itself
+        fac_name = row.get("facility_name", "Unknown") or "Unknown"
+        fac_state = row.get("state", "Unknown") or "Unknown"
+
+        # Get star rating from the facilities dataset
+        star_rating_raw = star_by_id.get(fid)
 
         # Parse star rating
         try:
@@ -169,8 +160,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
                 "facility_name": fac_name,
                 "state": fac_state,
                 "spending_ratio": ratio,
-                "hospital_spending": hospital_spending,
-                "national_avg": national_avg,
                 "star_rating": str(star_rating_raw) if star_rating_raw else "N/A",
                 "cost_quality_flag": cost_quality_flag,
             })
@@ -181,11 +170,9 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     total_analyzed = len(all_ratios)
     overspending_count = len(overspenders)
     avg_ratio = round(sum(all_ratios) / len(all_ratios), 4) if all_ratios else 0.0
-    avg_national = round(sum(all_national_avgs) / len(all_national_avgs), 2) if all_national_avgs else 0.0
     overspending_pct = round((overspending_count / total_analyzed) * 100, 2) if total_analyzed > 0 else 0.0
 
     # Cost-quality correlation insight
-    total_classified = high_cost_low_quality + high_cost_high_quality + low_cost_low_quality + low_cost_high_quality
     if overspending_count > 0 and high_cost_low_quality > 0:
         pct_inefficient = round((high_cost_low_quality / overspending_count) * 100, 1)
         insight = (
@@ -206,7 +193,6 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "avg_spending_ratio": avg_ratio,
             "overspending_count": overspending_count,
             "overspending_pct": overspending_pct,
-            "avg_national_spending": avg_national,
             "highest_spending_facility": highest_facility,
             "highest_spending_ratio": highest_ratio,
         },

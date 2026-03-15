@@ -14,37 +14,47 @@ ENV = {
 
 @pytest.fixture
 def sample_cost_rows():
-    """Sample Medicare spending per beneficiary rows."""
+    """Sample Medicare spending per beneficiary rows matching actual Domo schema."""
     return [
         {
             "facility_id": "100001",
+            "facility_name": "General Hospital A",
+            "state": "CA",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "0.95",
-            "avg_spending_hospital": "3600",
-            "avg_spending_national": "3800",
         },
         {
             "facility_id": "100002",
+            "facility_name": "City Medical Center",
+            "state": "CA",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "1.15",
-            "avg_spending_hospital": "4370",
-            "avg_spending_national": "3800",
         },
         {
             "facility_id": "100003",
+            "facility_name": "Rural Health Clinic",
+            "state": "CA",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "1.35",
-            "avg_spending_hospital": "5130",
-            "avg_spending_national": "3800",
         },
         {
             "facility_id": "100004",
+            "facility_name": "Memorial Hospital",
+            "state": "CA",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "0.98",
-            "avg_spending_hospital": "3724",
-            "avg_spending_national": "3800",
         },
         {
             "facility_id": "100005",
+            "facility_name": "Valley Hospital",
+            "state": "CA",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "1.22",
-            "avg_spending_hospital": "4636",
-            "avg_spending_national": "3800",
         },
     ]
 
@@ -55,32 +65,22 @@ def sample_cost_facilities_rows():
     return [
         {
             "facility_id": "100001",
-            "facility_name": "General Hospital A",
-            "state": "CA",
             "hospital_overall_rating": "4",
         },
         {
             "facility_id": "100002",
-            "facility_name": "City Medical Center",
-            "state": "CA",
             "hospital_overall_rating": "3",
         },
         {
             "facility_id": "100003",
-            "facility_name": "Rural Health Clinic",
-            "state": "CA",
             "hospital_overall_rating": "2",
         },
         {
             "facility_id": "100004",
-            "facility_name": "Memorial Hospital",
-            "state": "CA",
             "hospital_overall_rating": "5",
         },
         {
             "facility_id": "100005",
-            "facility_name": "Valley Hospital",
-            "state": "CA",
             "hospital_overall_rating": "1",
         },
     ]
@@ -136,16 +136,15 @@ async def test_cost_efficiency_summary_structure(
     assert "avg_spending_ratio" in summary
     assert "overspending_count" in summary
     assert "overspending_pct" in summary
-    assert "avg_national_spending" in summary
     assert "highest_spending_facility" in summary
     assert "highest_spending_ratio" in summary
 
 
 @pytest.mark.asyncio
-async def test_cost_efficiency_spending_ratio_calculation(
+async def test_cost_efficiency_spending_ratio_from_score(
     mock_domo, sample_cost_rows, sample_cost_facilities_rows
 ):
-    """Spending ratio is correctly calculated as hospital / national."""
+    """Spending ratio is taken directly from the score column."""
     call_count = 0
 
     def side_effect(dataset_id, sql):
@@ -160,7 +159,7 @@ async def test_cost_efficiency_spending_ratio_calculation(
     with patch.dict("os.environ", ENV):
         result = await run(mock_domo, {"spending_threshold": 1.1})
 
-    # Facility 100003: 5130 / 3800 = 1.35 (highest ratio)
+    # Facility 100003: score=1.35 (highest ratio)
     assert result["summary"]["highest_spending_ratio"] == pytest.approx(1.35, abs=0.01)
     assert result["summary"]["highest_spending_facility"] == "Rural Health Clinic"
 
@@ -185,14 +184,14 @@ async def test_cost_efficiency_identifies_overspenders(
         result = await run(mock_domo, {"spending_threshold": 1.1})
 
     overspender_ids = [o["facility_id"] for o in result["overspenders"]]
-    # 100002: 4370/3800=1.15 > 1.1 (overspender)
-    # 100003: 5130/3800=1.35 > 1.1 (overspender)
-    # 100005: 4636/3800=1.22 > 1.1 (overspender)
+    # 100002: score=1.15 > 1.1 (overspender)
+    # 100003: score=1.35 > 1.1 (overspender)
+    # 100005: score=1.22 > 1.1 (overspender)
     assert "100002" in overspender_ids
     assert "100003" in overspender_ids
     assert "100005" in overspender_ids
-    # 100001: 3600/3800=0.95 (not overspender)
-    # 100004: 3724/3800=0.98 (not overspender)
+    # 100001: score=0.95 (not overspender)
+    # 100004: score=0.98 (not overspender)
     assert "100001" not in overspender_ids
     assert "100004" not in overspender_ids
     assert result["summary"]["overspending_count"] == 3
@@ -274,9 +273,11 @@ async def test_cost_efficiency_state_filter(
         result = await run(mock_domo, {"state": "CA", "spending_threshold": 1.1})
 
     assert result["filters"]["state"] == "CA"
-    # Facilities query should include state condition
+    # Both cost and facilities queries should include state condition
     calls = mock_domo.query_as_dicts.call_args_list
+    cost_call_sql = calls[0][0][1]
     fac_call_sql = calls[1][0][1]
+    assert "state = 'CA'" in cost_call_sql
     assert "state = 'CA'" in fac_call_sql
 
 
@@ -320,17 +321,17 @@ async def test_cost_efficiency_limit_caps_overspenders(mock_domo):
     cost_rows = [
         {
             "facility_id": str(i),
+            "facility_name": f"Hospital {i}",
+            "state": "TX",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
             "score": "1.3",
-            "avg_spending_hospital": "4940",
-            "avg_spending_national": "3800",
         }
         for i in range(1, 31)
     ]
     fac_rows = [
         {
             "facility_id": str(i),
-            "facility_name": f"Hospital {i}",
-            "state": "TX",
             "hospital_overall_rating": "3",
         }
         for i in range(1, 31)
@@ -402,3 +403,47 @@ async def test_cost_efficiency_cache_hit(
 
     assert result1 == result2
     mock_domo.query_as_dicts.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cost_efficiency_handles_not_available_score(mock_domo):
+    """Rows with non-numeric score values like 'Not Available' are skipped."""
+    cost_rows = [
+        {
+            "facility_id": "200001",
+            "facility_name": "Good Hospital",
+            "state": "NY",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
+            "score": "1.05",
+        },
+        {
+            "facility_id": "200002",
+            "facility_name": "Unknown Hospital",
+            "state": "NY",
+            "measure_id": "MSPB-1",
+            "measure_name": "Medicare hospital spending per patient (Medicare Spending per Beneficiary)",
+            "score": "Not Available",
+        },
+    ]
+    fac_rows = [
+        {"facility_id": "200001", "hospital_overall_rating": "4"},
+        {"facility_id": "200002", "hospital_overall_rating": "3"},
+    ]
+    call_count = 0
+
+    def side_effect(dataset_id, sql):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return cost_rows
+        return fac_rows
+
+    mock_domo.query_as_dicts.side_effect = side_effect
+
+    with patch.dict("os.environ", ENV):
+        result = await run(mock_domo, {})
+
+    # Only facility 200001 should be analyzed (200002 has non-numeric score)
+    assert result["total_facilities_analyzed"] == 1
+    assert result["summary"]["highest_spending_facility"] == "Good Hospital"
