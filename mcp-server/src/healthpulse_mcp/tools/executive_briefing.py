@@ -199,6 +199,28 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "facility_ids": facility_ids if facility_ids else None,
             "include_equity": include_equity,
         },
+        "clinical_context": {
+            "anomaly_interpretation": (
+                "Quality anomalies are facilities whose measure scores deviate >= 2 standard "
+                "deviations from the national mean. Critical anomalies (|Z| >= 3.0) require "
+                "immediate review. These do not constitute regulatory findings."
+            ),
+            "care_gap_interpretation": (
+                "Care gaps represent excess readmission ratios > 1.05 — facilities readmitting "
+                "patients at rates 5%+ above predicted. CMS penalizes high-ratio hospitals "
+                "up to 3% of Medicare payments annually under the HRRP."
+            ),
+            "equity_interpretation": (
+                "High-vulnerability counties (SVI >= 0.75) are in the most socially vulnerable "
+                "25% of US counties per CDC/ATSDR criteria. Star rating gaps between high- and "
+                "low-SVI communities indicate systemic healthcare equity disparities."
+            ),
+            "data_currency": (
+                "Quality measures: CMS Hospital Compare (most recent release). "
+                "Community SVI: CDC/ATSDR Social Vulnerability Index 2022. "
+                "Readmissions: FY 2026 Hospital Readmissions Reduction Program."
+            ),
+        },
     }
 
     if include_equity and equity_summary is not None:

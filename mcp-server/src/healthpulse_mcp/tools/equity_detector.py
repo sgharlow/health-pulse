@@ -139,4 +139,20 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "svi_threshold": svi_threshold,
             "outcome_measure": outcome_measure,
         },
+        "clinical_context": {
+            "what_svi_means": (
+                "CDC Social Vulnerability Index (SVI) ranges 0-1. Higher values indicate "
+                "greater community vulnerability to health threats. SVI >= 0.75 indicates "
+                "the most vulnerable 25% of communities."
+            ),
+            "equity_implications": (
+                "Facilities serving high-SVI communities often face resource constraints, "
+                "higher uninsured rates, and social determinants that affect health outcomes "
+                "independently of clinical care quality."
+            ),
+            "data_source": (
+                "CDC/ATSDR Social Vulnerability Index 2022, based on US Census Bureau "
+                "American Community Survey data."
+            ),
+        },
     }

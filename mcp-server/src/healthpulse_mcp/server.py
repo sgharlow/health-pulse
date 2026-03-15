@@ -1,10 +1,11 @@
 """HealthPulse AI MCP server entry point.
 
-Registers 5 healthcare analytics tools via FastMCP and exposes them
-over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
+Registers 5 healthcare analytics tools and 3 MCP resources via FastMCP and
+exposes them over Streamable HTTP transport at /mcp (for Prompt Opinion marketplace).
 """
 
 import contextlib
+import json
 import os
 from typing import Any, AsyncIterator, Optional
 
@@ -239,6 +240,100 @@ async def executive_briefing_tool(
         "facility_ids": facility_ids or [],
         "include_equity": include_equity,
     })
+
+
+# ---------------------------------------------------------------------------
+# MCP Resource registrations
+# ---------------------------------------------------------------------------
+
+
+@mcp.resource("healthpulse://states")
+async def list_states() -> str:
+    """List all US states with hospital counts from the facilities dataset."""
+    ds_id = os.environ.get("HP_FACILITIES_DATASET_ID", "")
+    if not ds_id:
+        return json.dumps({"error": "HP_FACILITIES_DATASET_ID not configured"})
+    try:
+        domo = _get_domo_client()
+        rows = domo.query_as_dicts(
+            ds_id,
+            "SELECT state, COUNT(*) as facility_count FROM table GROUP BY state ORDER BY facility_count DESC",
+        )
+        return json.dumps({"states": rows, "total_states": len(rows)})
+    except Exception as exc:
+        return json.dumps({"error": str(exc)})
+
+
+@mcp.resource("healthpulse://measures")
+async def list_measures() -> str:
+    """List available CMS quality measures and their clinical descriptions."""
+    measures = {
+        "MORT_30_AMI": "30-day mortality rate for heart attack (AMI)",
+        "MORT_30_HF": "30-day mortality rate for heart failure",
+        "MORT_30_COPD": "30-day mortality rate for COPD",
+        "MORT_30_PN": "30-day mortality rate for pneumonia",
+        "MORT_30_STK": "30-day mortality rate for stroke",
+        "MORT_30_CABG": "30-day mortality rate for CABG surgery",
+        "PSI_90_SAFETY": "Patient Safety Indicator composite score",
+        "OP_18b": "Median time from ED arrival to departure (minutes)",
+        "OP_22": "Percentage of patients who left the ED without being seen",
+        "SEP_1": "Percentage of patients receiving appropriate sepsis care",
+        "IMM_3": "Healthcare workers vaccinated for influenza",
+    }
+    return json.dumps({"measures": measures, "total_measures": len(measures)})
+
+
+@mcp.resource("healthpulse://about")
+async def about_server() -> str:
+    """Describe the HealthPulse AI server, its data sources, and capabilities."""
+    about = {
+        "name": "HealthPulse AI",
+        "description": (
+            "Healthcare performance intelligence MCP server. Provides statistical anomaly "
+            "detection, care gap identification, equity analysis, facility benchmarking, "
+            "and executive briefing generation using CMS hospital quality data."
+        ),
+        "data_sources": [
+            {
+                "name": "CMS Hospital General Information",
+                "description": "4,800+ US hospitals with star ratings, hospital type, location",
+                "update_frequency": "Annual",
+                "env_var": "HP_FACILITIES_DATASET_ID",
+            },
+            {
+                "name": "CMS Hospital Quality Measures",
+                "description": "Mortality, safety, timeliness, and patient experience measures",
+                "update_frequency": "Quarterly",
+                "env_var": "HP_QUALITY_DATASET_ID",
+            },
+            {
+                "name": "CMS Hospital Readmissions Reduction Program",
+                "description": "Excess readmission ratios by facility and condition",
+                "update_frequency": "Annual",
+                "env_var": "HP_READMISSIONS_DATASET_ID",
+            },
+            {
+                "name": "CDC/ATSDR Social Vulnerability Index 2022",
+                "description": (
+                    "County-level SVI scores for 3,144 US counties based on US Census "
+                    "Bureau ACS data. Includes poverty, unemployment, uninsured rates, "
+                    "education, and minority population metrics."
+                ),
+                "update_frequency": "Every 2 years",
+                "env_var": "HP_COMMUNITY_DATASET_ID",
+            },
+        ],
+        "tools": [
+            "quality_monitor — Z-score anomaly detection across CMS quality measures",
+            "care_gap_finder — Excess readmission ratios and worse-than-national quality flags",
+            "equity_detector — SVI correlation with facility outcomes for equity analysis",
+            "facility_benchmark — Side-by-side comparison of specific facilities",
+            "executive_briefing — Aggregated network-wide performance data with LLM prompt",
+        ],
+        "sharp_support": True,
+        "phi_handling": "No PHI — all data is de-identified CMS aggregate and CDC statistics",
+    }
+    return json.dumps(about, indent=2)
 
 
 # ---------------------------------------------------------------------------

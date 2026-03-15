@@ -92,7 +92,7 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
 
     facility_ids = {str(r.get("facility_id")) for r in rows}
 
-    return {
+    result: dict[str, Any] = {
         "total_facilities_analyzed": len(facility_ids),
         "measures_checked": len(measures),
         "anomaly_count": len(all_anomalies),
@@ -102,4 +102,23 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "measure_group": measure_group,
             "threshold_sigma": threshold_sigma,
         },
+        "clinical_context": {
+            "what_z_scores_mean": (
+                "A Z-score measures how far a facility's performance deviates from the "
+                "population mean. |Z| > 2.0 is unusual, |Z| > 3.0 is a severe outlier "
+                "requiring immediate attention."
+            ),
+            "measure_descriptions": {
+                "MORT_30_AMI": "30-day death rate after heart attack admission. National avg ~12.5%. Higher = worse.",
+                "MORT_30_HF": "30-day death rate after heart failure admission. National avg ~11.2%. Higher = worse.",
+                "MORT_30_COPD": "30-day death rate after COPD admission. National avg ~8.4%. Higher = worse.",
+                "MORT_30_PN": "30-day death rate after pneumonia admission. National avg ~14.2%. Higher = worse.",
+                "MORT_30_STK": "30-day death rate after stroke admission. National avg ~12.6%. Higher = worse.",
+                "MORT_30_CABG": "30-day death rate after CABG surgery. National avg ~2.8%. Higher = worse.",
+                "OP_18b": "Median minutes patients spend in the ED. National median ~180 min. Higher = worse.",
+                "OP_22": "Percent of patients leaving ED without being seen. National avg ~2%. Higher = worse.",
+                "SEP_1": "Percent of sepsis patients receiving appropriate care. National avg ~55%. Higher = better.",
+            },
+        },
     }
+    return result

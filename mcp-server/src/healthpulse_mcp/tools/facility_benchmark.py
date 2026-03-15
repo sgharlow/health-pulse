@@ -147,4 +147,21 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
     return {
         "facilities": ordered_facilities,
         "comparison_count": len(ordered_facilities),
+        "clinical_context": {
+            "how_to_compare": (
+                "Compare quality_measures.score values across facilities for the same "
+                "measure_id. For mortality measures, lower scores are better. "
+                "For process measures (SEP_1, IMM_3), higher scores are better."
+            ),
+            "star_rating_guide": (
+                "CMS Overall Hospital Quality Star Ratings range 1-5. Based on 46+ measures "
+                "across mortality, safety, readmission, patient experience, and timeliness. "
+                "Fewer than 30% of US hospitals earn a 5-star rating."
+            ),
+            "readmission_interpretation": (
+                "excess_readmission_ratio > 1.0 means more readmissions than predicted "
+                "after adjusting for patient mix. CMS uses this for the Hospital Readmissions "
+                "Reduction Program (HRRP) payment adjustments."
+            ),
+        },
     }

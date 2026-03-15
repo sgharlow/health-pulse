@@ -160,4 +160,15 @@ async def run(domo: DomoClient, args: dict[str, Any]) -> dict[str, Any]:
             "gap_type": gap_type,
             "min_excess_ratio": min_excess_ratio,
         },
+        "clinical_context": {
+            "what_excess_ratio_means": (
+                "An excess readmission ratio > 1.0 means the hospital readmits more patients "
+                "than expected. 1.10 = 10% more readmissions than predicted. "
+                "CMS penalizes hospitals with high ratios."
+            ),
+            "financial_impact": (
+                "CMS reduces payments by up to 3% for hospitals with excess readmissions. "
+                "Total Medicare readmission costs: ~$26 billion/year."
+            ),
+        },
     }
