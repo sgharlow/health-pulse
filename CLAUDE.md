@@ -12,11 +12,11 @@ Healthcare performance intelligence MCP server + dashboard for the Agents Assemb
 
 ## Commands
 - MCP server: `cd mcp-server && pip install -e ".[dev]" && python -m healthpulse_mcp.server`
-- Tests (MCP): `cd mcp-server && pytest` (295 tests)
+- Tests (MCP): `cd mcp-server && pytest` (250 tests)
 - Data load: `cd scripts && python load_cms_data.py`
 - Dashboard: `cd web && npm install && npm run dev`
 - Tests (web): `cd web && npm test` (63 tests)
-- **Total test files:** 358
+- **Total tests:** 313
 
 ## MCP Tools (11)
 quality_monitor, care_gap_finder, equity_detector, facility_benchmark,
