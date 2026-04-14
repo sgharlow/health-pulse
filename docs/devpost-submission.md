@@ -36,7 +36,7 @@ This matters because Medicare readmission penalties cost US hospitals over $500M
 
 - **11 MCP tools spanning 6 analytical dimensions** — quality, readmissions, equity, patient experience, cost efficiency, and patient-level FHIR — all backed by real CMS data, not mocked responses
 - **Cross-cutting multi-factor analysis that found 42% of Florida hospitals have compounding risk factors** — the kind of systemic pattern that no single-metric dashboard surfaces
-- **358 tests** (295 MCP server pytest + 63 web dashboard Vitest) covering every tool, the analytics engine, SHARP context handling, Domo client, API routes, and UI components
+- **313 tests** (250 MCP server pytest + 63 web dashboard Vitest) covering every tool, the analytics engine, SHARP context handling, Domo client, API routes, and UI components
 - **Three access modalities from one codebase** — Prompt Opinion marketplace, visual dashboard with 7 pages, and conversational chat with Claude tool routing — all consuming the same 11 MCP tools
 - **Zero PHI architecture** using only public CMS data and Synthea synthetic patients, making the entire system deployable without HIPAA compliance barriers
 

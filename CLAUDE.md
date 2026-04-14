@@ -12,7 +12,7 @@ Healthcare performance intelligence MCP server + dashboard for the Agents Assemb
 
 ## Commands
 - MCP server: `cd mcp-server && pip install -e ".[dev]" && python -m healthpulse_mcp.server`
-- Tests (MCP): `cd mcp-server && pytest` (250 tests)
+- Tests (MCP): `cd mcp-server && pytest` (250 tests, verified 2026-04-13)
 - Data load: `cd scripts && python load_cms_data.py`
 - Dashboard: `cd web && npm install && npm run dev`
 - Tests (web): `cd web && npm test` (63 tests)
