@@ -1,7 +1,7 @@
 # HealthPulse AI — Remaining Steps to Submission
 
-> Last updated: 2026-03-15
-> Deadline: May 11, 2026, 11:00 PM EDT (57 days remaining)
+> Last updated: 2026-04-16
+> Deadline: May 11, 2026, 11:00 PM EDT (25 days remaining)
 > All code/data/deployment work is complete. Only manual steps remain.
 
 ---

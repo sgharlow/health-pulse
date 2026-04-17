@@ -4,6 +4,25 @@
 
 > Healthcare Performance Intelligence MCP Server + Dashboard
 
+## For Judges — Agents Assemble Hackathon
+
+| | |
+|---|---|
+| **Live Dashboard** | https://web-umber-alpha-41.vercel.app |
+| **Live MCP Server** | https://health-pulse-mcp-production.up.railway.app/mcp |
+| **Submission Brief** | [`SUBMISSION.md`](./SUBMISSION.md) (root) → [`assets/SUBMISSION.md`](./assets/SUBMISSION.md) (detailed) |
+| **Demo Script** | [`assets/VIDEO-SCRIPT.md`](./assets/VIDEO-SCRIPT.md) |
+| **Demo Screenshots** | [`assets/screenshots/`](./assets/screenshots/) (10 numbered PNGs) |
+| **Architecture** | [`assets/architecture.md`](./assets/architecture.md) |
+| **License** | MIT (see [`LICENSE`](./LICENSE)) |
+| **Author** | Steve Harlow ([github.com/sgharlow](https://github.com/sgharlow)) |
+| **Demo Video** | _Link to be added post-recording_ |
+
+**One-line summary:** 11-tool MCP server + Next.js dashboard surfacing 233K+ rows of real CMS hospital data (5,400+ facilities), backed by 313 automated tests and deployed to production.
+
+---
+
+
 HealthPulse AI is a Model Context Protocol (MCP) server and Next.js dashboard that surfaces actionable intelligence from 233,000+ rows of real CMS hospital quality data across 5,400+ US facilities and 100 synthetic FHIR patients. It gives AI agents eleven analytics tools spanning quality anomaly detection, care gap identification, health equity analysis, facility benchmarking, executive briefing generation, state-level ranking, cross-cutting multi-factor risk analysis, patient-level risk profiling, cohort analysis, patient experience scoring, and cost efficiency analysis — all backed by real public data loaded into Domo, synthetic FHIR patient data from Synthea, and served over a production HTTPS endpoint with a conversational chat interface and AI narrative briefing.
 
 ## What It Does
@@ -75,14 +94,17 @@ pip install -e ".[dev]"
 # 3. Configure environment variables
 cp ../.env.example .env
 # Edit .env and fill in:
-#   DOMO_CLIENT_ID
-#   DOMO_CLIENT_SECRET
+#   DOMO_CLIENT_ID           (get from https://developer.domo.com/)
+#   DOMO_CLIENT_SECRET       (get from https://developer.domo.com/)
+#   DOMO_INSTANCE            (your-subdomain.domo.com)
 #   HP_FACILITIES_DATASET_ID
 #   HP_QUALITY_DATASET_ID
 #   HP_READMISSIONS_DATASET_ID
 #   HP_COMMUNITY_DATASET_ID
 #   HP_EXPERIENCE_DATASET_ID
-#   HP_API_KEY  (optional — enables auth)
+#   HP_SAFETY_DATASET_ID     (used by cross_cutting_analysis tool)
+#   HP_COST_DATASET_ID       (used by cost_efficiency tool)
+#   HP_API_KEY               (optional — enables auth middleware)
 
 # 4. Load CMS data into Domo (one-time)
 cd ../scripts
