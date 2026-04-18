@@ -18,6 +18,10 @@ out/
 .env.local
 .env.*.local
 
+# Keys / certificates (defense in depth — none currently in repo)
+*.pem
+*.key
+
 # Data
 data/raw/
 data/curated/
