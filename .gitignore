@@ -35,3 +35,6 @@ data/curated/
 Thumbs.db
 .vercel
 .env*.local
+
+# Walkthrough screenshots (local capture only, not part of submission)
+screenshots/

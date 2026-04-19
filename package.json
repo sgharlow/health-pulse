@@ -1,0 +1,29 @@
+{
+  "name": "health-pulse",
+  "version": "1.0.0",
+  "description": "Recording + walkthrough tooling for health-pulse. The Next.js app lives in web/ and has its own package.json.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "cd web && npm run build",
+    "test": "cd web && npm test",
+    "record": "node scripts/record-walkthrough.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgharlow/health-pulse.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sgharlow/health-pulse/issues"
+  },
+  "homepage": "https://github.com/sgharlow/health-pulse#readme",
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}
