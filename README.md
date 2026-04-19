@@ -126,7 +126,7 @@ npm run dev
 ### Running Tests
 
 ```bash
-# MCP server tests (243 tests)
+# MCP server tests (250 tests)
 cd mcp-server
 pytest
 
