@@ -1,0 +1,19 @@
+HealthPulse AI — eleven MCP tools, one healthcare platform.
+
+First question to the agent: show me quality anomalies in California hospitals. Behind this chat, HealthPulse isn't an app — it's a Model Context Protocol server. Eleven healthcare intelligence tools that any MCP client — Claude Desktop, Prompt Opinion, the Anthropic API, a custom agent — can invoke by name. Right now Claude is calling the quality monitor tool against two hundred thirty-three thousand rows of real CMS data, computing Z-scores across all fifty-four hundred US hospitals. No dashboards. No thresholds. Structured output a host model can reason over.
+
+And here's the finding. UCI Health Los Alamitos — forty-eight percent higher hip-and-knee readmissions than expected. Oroville and Kaweah Health flagged as repeat offenders. Not threshold alerts — statistical pattern detection across an entire state, in a single tool call. Next query: what's the equity disparity in Texas? The equity detector tool is now correlating every Texas hospital's star rating against the CDC Social Vulnerability Index, county by county. Same primitive, different tool.
+
+A Dallas County paradox — vulnerable communities receiving two-star care while UT Southwestern next door runs four-star. Systemic disparity, one tool call.
+
+The executive briefing tool aggregates state data into a board-ready analysis. California: three hundred seventy-eight facilities, three-point-oh-one average stars, two hundred fifty-three care gaps, thirty high-risk counties. Claude is now composing the narrative — findings, anomalies, equity, recommendations — all from a single structured tool call. PDF export ships built-in. This is agent composability in action.
+
+Layer two: a Next.js dashboard on top of the same tools, for humans. National view — fifty-four twenty-six hospitals, three-point-oh-eight average, four hundred fifty quality flags. Filter to California and the same analysis refocuses, instantly.
+
+Every facility is searchable. Type UCSF — five hospitals in the system, Medical Center rating a perfect five stars across CMS quality measures.
+
+Compare any two facilities head-to-head. UCSF versus Cleveland Clinic — death rates, safety scores, ED wait times, all aligned in one LLM-readable view.
+
+The equity page visualizes the disparity the tool computes. Point seven seven stars. Seventeen hundred high-SVI facilities.
+
+Eleven tools. Real data. Zero PHI. Built for Agents Assemble.

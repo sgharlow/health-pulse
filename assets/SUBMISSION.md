@@ -142,3 +142,4 @@ HealthPulse AI is not a proof of concept — it is operational today with a unif
 - Dashboard: Next.js on Vercel — `https://web-umber-alpha-41.vercel.app`
 - Registered on Prompt Opinion marketplace
 - GitHub: `https://github.com/sgharlow/health-pulse`
+- Demo Video (2:18): `https://youtu.be/40haMLuDOIk`

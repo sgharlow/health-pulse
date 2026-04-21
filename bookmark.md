@@ -35,7 +35,7 @@ Everything is built, tested, and deployed. 313 tests passing, CI green, 11 tools
 - **About:** Copy full text from `assets/SUBMISSION.md`
 - **Built With:** Python, MCP, FastMCP, Domo, Starlette, Next.js, TypeScript, Tailwind CSS, Recharts, Vitest, @anthropic-ai/sdk, @react-pdf/renderer, Railway, Vercel, Synthea
 - **Try It Out:** https://app.promptopinion.ai (note: select "HealthPulse AI" in Launchpad)
-- **Demo Video:** YouTube URL from step 1
+- **Demo Video:** https://youtu.be/40haMLuDOIk
 - **Repository:** https://github.com/sgharlow/health-pulse
 - **Images:** Upload screenshots from `assets/screenshots/` (10 images)
 

@@ -94,7 +94,7 @@ URL: https://agents-assemble.devpost.com/
 | About        | Copy from `health-pulse/docs/devpost-submission.md`                                                                                      |
 | Built With   | Python, MCP, FastMCP, Domo, Next.js, TypeScript, Tailwind CSS, Recharts, Vitest, Railway, Vercel, Synthea                                |
 | Try It Out   | Prompt Opinion marketplace URL (from Step 1)                                                                                             |
-| Demo Video   | YouTube URL (from Step 3)                                                                                                                |
+| Demo Video   | https://youtu.be/40haMLuDOIk                                                                                                             |
 | Repository   | https://github.com/sgharlow/health-pulse                                                                                                 |
 | Images       | Upload screenshots from Step 4                                                                                                           |
 

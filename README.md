@@ -16,7 +16,7 @@
 | **Architecture** | [`assets/architecture.md`](./assets/architecture.md) |
 | **License** | MIT (see [`LICENSE`](./LICENSE)) |
 | **Author** | Steve Harlow ([github.com/sgharlow](https://github.com/sgharlow)) |
-| **Demo Video** | _Link to be added post-recording_ |
+| **Demo Video** | https://youtu.be/40haMLuDOIk |
 
 **One-line summary:** 11-tool MCP server + Next.js dashboard surfacing 233K+ rows of real CMS hospital data (5,400+ facilities), backed by 313 automated tests and deployed to production.
 

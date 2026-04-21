@@ -59,6 +59,7 @@ This matters because Medicare readmission penalties cost US hospitals over $500M
 Python, MCP, FastMCP, Starlette, uvicorn, Domo, Next.js 16, React 19, TypeScript, Tailwind CSS, Recharts, Vitest, pytest, @anthropic-ai/sdk, @react-pdf/renderer, Docker, Railway, Vercel, Synthea, FHIR, SHARP
 
 ## Try It Out
+- **Demo Video (2:18):** https://youtu.be/40haMLuDOIk
 - **GitHub:** https://github.com/sgharlow/health-pulse
 - **MCP Server:** https://health-pulse-mcp-production.up.railway.app/mcp
 - **Dashboard:** https://web-umber-alpha-41.vercel.app

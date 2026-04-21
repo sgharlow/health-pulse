@@ -14,6 +14,7 @@ This root-level file is a one-page pointer for judges. Everything you need is li
 
 | | URL |
 |---|---|
+| **Demo Video (2:18)** | https://youtu.be/40haMLuDOIk |
 | **Dashboard** | https://web-umber-alpha-41.vercel.app |
 | **MCP Server** | https://health-pulse-mcp-production.up.railway.app/mcp |
 | **GitHub** | https://github.com/sgharlow/health-pulse |

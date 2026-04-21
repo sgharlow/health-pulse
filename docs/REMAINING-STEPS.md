@@ -147,7 +147,7 @@ Capture these screenshots and save to `health-pulse/assets/`:
 | **About** | Copy from `assets/SUBMISSION.md` (the full text) |
 | **Built With** | Python, MCP, FastMCP, Domo, Starlette, Next.js, TypeScript, Tailwind CSS, Recharts, Vitest, @anthropic-ai/sdk, @react-pdf/renderer, Railway, Vercel, Synthea |
 | **Try It Out** | Prompt Opinion marketplace URL (from step 2) |
-| **Demo Video** | YouTube URL (from step 4) |
+| **Demo Video** | https://youtu.be/40haMLuDOIk |
 | **Repository** | https://github.com/sgharlow/health-pulse |
 | **Images** | Upload screenshots from step 5 |
 

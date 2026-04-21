@@ -1,0 +1,217 @@
+1
+00:00:00,000 --> 00:00:04,560
+HealthPulse AI, 11 MCP tools, one healthcare platform.
+
+2
+00:00:04,560 --> 00:00:05,840
+First question to the agent,
+
+3
+00:00:05,840 --> 00:00:08,920
+show me quality anomalies in California hospitals.
+
+4
+00:00:08,920 --> 00:00:11,120
+Behind this chat, HealthPulse isn't an app,
+
+5
+00:00:11,120 --> 00:00:13,120
+it's a Model Context Protocol server.
+
+6
+00:00:13,120 --> 00:00:16,200
+11 healthcare intelligence tools that any MCP client,
+
+7
+00:00:16,200 --> 00:00:19,240
+Claude Desktop, Prompt Opinion, the Anthropic API,
+
+8
+00:00:19,240 --> 00:00:21,000
+a custom agent, can invoke by name.
+
+9
+00:00:21,000 --> 00:00:23,160
+Right now, Claude is calling the quality monitor tool
+
+10
+00:00:23,160 --> 00:00:26,639
+against 233,000 rows of real CMS data,
+
+11
+00:00:26,639 --> 00:00:30,360
+computing Z-scores across all 5,400 U.S. hospitals.
+
+12
+00:00:30,360 --> 00:00:33,880
+No dashboards, no thresholds, structured output,
+
+13
+00:00:33,880 --> 00:00:35,840
+a host model can reason over.
+
+14
+00:00:35,840 --> 00:00:38,959
+And here's the finding, UCI Health Los Alamitos,
+
+15
+00:00:38,959 --> 00:00:42,360
+48% higher hip and knee readmissions than expected.
+
+16
+00:00:42,360 --> 00:00:45,279
+Oroville and Kaweah Health flagged as repeat offenders,
+
+17
+00:00:45,279 --> 00:00:47,119
+not threshold alerts.
+
+18
+00:00:47,119 --> 00:00:49,680
+Statistical pattern detection across an entire state
+
+19
+00:00:49,680 --> 00:00:51,480
+in a single tool call.
+
+20
+00:00:51,480 --> 00:00:54,639
+Next query, what's the equity disparity in Texas?
+
+21
+00:00:54,639 --> 00:00:56,480
+The equity detector tool is now correlating
+
+22
+00:00:57,320 --> 00:00:58,160
+every Texas hospital star rating
+
+23
+00:00:58,160 --> 00:01:00,799
+against the CDC Social Vulnerability Index,
+
+24
+00:01:00,799 --> 00:01:02,040
+county by county.
+
+25
+00:01:02,040 --> 00:01:04,440
+Same primitive, different tool.
+
+26
+00:01:04,440 --> 00:01:07,000
+A Dallas County paradox, vulnerable communities
+
+27
+00:01:07,000 --> 00:01:09,440
+receiving two-star care while UT Southwestern
+
+28
+00:01:09,440 --> 00:01:11,160
+next door runs four-star.
+
+29
+00:01:11,160 --> 00:01:13,320
+Systemic disparity, one tool call.
+
+30
+00:01:13,320 --> 00:01:15,519
+The executive briefing tool aggregates state data
+
+31
+00:01:15,519 --> 00:01:17,639
+into a board-ready analysis.
+
+32
+00:01:17,639 --> 00:01:21,959
+California, 378 facilities, 3.01 average stars,
+
+33
+00:01:21,959 --> 00:01:25,199
+253 care gaps, 30 high-risk counties.
+
+34
+00:01:25,239 --> 00:01:27,000
+Claude is now composing the narrative,
+
+35
+00:01:27,000 --> 00:01:29,480
+findings, anomalies, equity recommendations,
+
+36
+00:01:29,480 --> 00:01:31,839
+all from a single structured tool call.
+
+37
+00:01:31,839 --> 00:01:34,199
+PDF export ships built in.
+
+38
+00:01:34,199 --> 00:01:36,760
+This is agent composability in action.
+
+39
+00:01:36,760 --> 00:01:40,400
+Layer two, a Next.js dashboard on top of the same tools
+
+40
+00:01:40,400 --> 00:01:41,360
+for humans.
+
+41
+00:01:41,360 --> 00:01:45,480
+National view, 5426 hospitals, 3.08 average,
+
+42
+00:01:45,480 --> 00:01:47,720
+450 quality flags.
+
+43
+00:01:47,720 --> 00:01:50,680
+Filter to California and the same analysis refocuses
+
+44
+00:01:50,680 --> 00:01:53,120
+instantly, every facility is searchable.
+
+45
+00:01:53,120 --> 00:01:55,480
+Type UCSF, five hospitals in the system,
+
+46
+00:01:55,480 --> 00:01:57,400
+medical center rating a perfect five stars
+
+47
+00:01:57,400 --> 00:01:59,239
+across CMS quality measures.
+
+48
+00:01:59,239 --> 00:02:01,360
+Compare any two facilities head-to-head.
+
+49
+00:02:01,360 --> 00:02:03,800
+UCSF versus Cleveland Clinic, death rates,
+
+50
+00:02:03,800 --> 00:02:05,800
+safety scores, ED wait times,
+
+51
+00:02:05,800 --> 00:02:08,039
+all aligned in one LLM readable view.
+
+52
+00:02:08,039 --> 00:02:10,839
+The equity page visualizes the disparity the tool computes.
+
+53
+00:02:10,839 --> 00:02:14,399
+0.77 stars, 1,700 high-SVI facilities,
+
+54
+00:02:14,399 --> 00:02:18,440
+11 tools, real data, zero PHI, built for Agents Assemble.
+
+
