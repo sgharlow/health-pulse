@@ -47,7 +47,7 @@ The Domo developer trial (`steve-dev-1098525`) expires ~April 13, which is 28 da
 
 1. **Create a fresh Domo developer trial around April 10** — re-run `scripts/load_cms_data.py` to load data into the new instance, update dataset IDs in Railway env vars and Vercel env vars. Takes ~1 hour.
 
-2. **Migrate to `opusinspection` Domo instance** — this is the existing Domo instance from the inspection-intelligence project with working OAuth. Prefix datasets with `hp_` and re-upload. Update env vars on Railway + Vercel. Takes ~1 hour.
+2. **Migrate to a secondary Domo tenant** — any existing Domo workspace with working OAuth. Prefix datasets with `hp_` and re-upload. Update env vars on Railway + Vercel. Takes ~1 hour.
 
 3. **Contact Domo support** to extend the trial. Uncertain timeline.
 

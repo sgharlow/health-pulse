@@ -633,7 +633,7 @@ HP_COMMUNITY_DATASET_ID=
 - Start trial: **April 11, 2026** (30 days before May 11 deadline)
 - This gives us the trial active from Apr 11 through May 11
 - We can start development locally with mock data / existing instance before Apr 11
-- Fallback: `opusinspection` Domo instance (existing, working OAuth, prefix datasets with `hp_`)
+- Fallback: a secondary Domo tenant (existing, working OAuth, prefix datasets with `hp_`)
 
 ## 12. Hackathon Submission Assets
 
@@ -662,7 +662,7 @@ HP_COMMUNITY_DATASET_ID=
 
 | Risk | Probability | Impact | Mitigation |
 |------|------------|--------|-----------|
-| Domo trial expires before deadline | Low | High | Start trial Apr 11 (30 days). Instant activation. Fallback: existing `opusinspection` instance with `hp_` prefix. |
+| Domo trial expires before deadline | Low | High | Start trial Apr 11 (30 days). Instant activation. Fallback: a secondary Domo tenant with `hp_` prefix. |
 | Prompt Opinion platform is harder than expected | Medium | **Critical** | Moved to Phase 0/1 (not Phase 2). Explore on Day 1. Reference repos (`po-community-mcp`) provide working examples. Platform has no-code agent config option. |
 | SHARP implementation is unclear | Medium | High | sharponmcp.com has spec. Reference MCP server (`po-community-mcp`) implements it. Study that implementation first. |
 | CMS data has too many nulls | Low | Medium | Filter to ~3,000 hospitals with complete data. Still massive. |
