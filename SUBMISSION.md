@@ -14,6 +14,7 @@ This root-level file is a one-page pointer for judges. Everything you need is li
 
 | | URL |
 |---|---|
+| **Devpost project** | _TODO: paste the devpost.com/software/... URL once visible to Steve_ |
 | **Demo Video (2:18)** | https://youtu.be/40haMLuDOIk |
 | **Dashboard** | https://web-umber-alpha-41.vercel.app |
 | **MCP Server** | https://health-pulse-mcp-production.up.railway.app/mcp |

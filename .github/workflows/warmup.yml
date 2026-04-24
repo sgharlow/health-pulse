@@ -1,0 +1,28 @@
+name: Warmup deployments
+
+# Pre-warm Vercel dashboard + Railway MCP every 30 minutes during business hours
+# (9 AM – 7 PM Mountain, Mon–Fri) so judging clicks land on a hot cache instead
+# of a cold lambda. Manual dispatch is also available for ad-hoc runs before a
+# live demo (the warmup script's intended use per scripts/warmup.mjs).
+#
+# Cron expressions are UTC. 9 AM MT = 15:00 UTC (MDT) / 16:00 UTC (MST).
+# The cron below runs every 30 min from 15:00 to 23:30 UTC, which covers
+# 9 AM – 5:30 PM MT year-round (slightly conservative on the MST side).
+
+on:
+  schedule:
+    - cron: '0,30 15-23 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  warmup:
+    name: Warm Vercel + Railway endpoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run warmup script
+        run: node scripts/warmup.mjs
