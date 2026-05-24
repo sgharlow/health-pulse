@@ -1,7 +1,10 @@
 # HealthPulse AI — Session Bookmark
 
-> Last updated: 2026-03-15
-> Resume this checklist after the demo video is recorded.
+> ⚠️ This bookmark is stale. The "Last updated: 2026-03-15" date is wrong — the file references the demo video (https://youtu.be/40haMLuDOIk) which was added 2026-04-20, and lists 36 commits while the actual repo had ~54 commits by deadline. The Agents Assemble deadline (2026-05-11) has now passed. All "remaining steps" below were pre-deadline tasks.
+>
+> **OWNER: Devpost row below says "Not yet submitted" — MEMORY records submission on 2026-04-21. One of these is wrong. Confirm and paste the devpost.com/software/... URL.**
+>
+> Last updated: 2026-03-15 (stale — see banner above)
 
 ---
 
@@ -15,7 +18,7 @@ Everything is built, tested, and deployed. 313 tests passing, CI green, 11 tools
 | Dashboard | https://web-umber-alpha-41.vercel.app | 7 pages, chat, AI briefing, PDF |
 | Prompt Opinion | https://app.promptopinion.ai | Published, verified |
 | GitHub | https://github.com/sgharlow/health-pulse | 36 commits, CI green |
-| Devpost | https://agents-assemble.devpost.com/ | Not yet submitted |
+| Devpost | https://agents-assemble.devpost.com/ | **OWNER ACTION REQUIRED** — recorded here as "Not yet submitted" but MEMORY says submitted 2026-04-21. Confirm + paste software URL. |
 
 ---
 
@@ -87,8 +90,8 @@ The Domo developer trial (`steve-dev-1098525`) expires ~April 13, which is 28 da
 | Tests | 313 (250 MCP + 63 web) |
 | Dashboard Pages | 7 |
 | API Routes | 6 |
-| Commits | 36 |
-| Deadline | May 11, 2026, 11:00 PM EDT |
+| Commits | 36 (stale — actual count ~54 at deadline; in-repo docs did not track live git history) |
+| Deadline | May 11, 2026, 11:00 PM EDT (PASSED — awaiting judging results) |
 
 ## Env Vars to Update if Domo Instance Changes
 

@@ -1,7 +1,8 @@
 # HealthPulse AI — Remaining Steps to Submission
 
-> Last updated: 2026-04-16
-> Deadline: May 11, 2026, 11:00 PM EDT (25 days remaining)
+> ⚠️ Historical pre-submission checklist. Deadline 2026-05-11 has passed. "25 days remaining" is stale.
+
+> Last updated: 2026-04-16 (stale — deadline was May 11, 2026, 11:00 PM EDT)
 > All code/data/deployment work is complete. Only manual steps remain.
 
 ---
@@ -198,4 +199,4 @@ These can be added after initial submission (Devpost allows edits until deadline
 | API Routes | 6 |
 | Chat Interface | Claude-powered conversational tool routing |
 | AI Briefing | Narrative generation with PDF export |
-| Commits | 30 |
+| Commits | 30 (stale — actual count ~54 as of 2026-05-11; in-repo docs did not track live git history) |
