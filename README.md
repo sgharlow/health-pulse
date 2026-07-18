@@ -1,3 +1,5 @@
+> 📦 **Archived** — HealthPulse AI: healthcare performance-intelligence MCP server. Hackathon entry, submitted Apr 2026; event concluded. Not maintained. Code and history remain browsable.
+
 # HealthPulse AI
 
 ![Tests](https://github.com/sgharlow/health-pulse/actions/workflows/test.yml/badge.svg)
