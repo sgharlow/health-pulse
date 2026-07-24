@@ -1,4 +1,4 @@
-> 📦 **Archived** — HealthPulse AI: healthcare performance-intelligence MCP server. Hackathon entry, submitted Apr 2026; event concluded. Not maintained. Code and history remain browsable.
+> 📦 **Archived** — HealthPulse AI: healthcare performance-intelligence MCP server. Hackathon entry (Agents Assemble, Apr 2026); event concluded. Not maintained. Code and history remain browsable. Whether the Devpost form was actually submitted is UNCONFIRMED — `SUBMISSION.md` is the single authoritative record of that open question (banner corrected 2026-07-24; the previous "submitted Apr 2026" wording overstated the record).
 
 # HealthPulse AI
 

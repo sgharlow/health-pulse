@@ -14,7 +14,7 @@ This root-level file is a one-page pointer for judges. Everything you need is li
 
 | | URL |
 |---|---|
-| **Devpost project** | _TODO: paste the devpost.com/software/... URL once visible to Steve_ — **OWNER ACTION REQUIRED:** `bookmark.md` (last recorded state) says "Not yet submitted"; MEMORY (cross-session notes) says submitted 2026-04-21. These conflict. Owner must confirm whether Devpost submission was completed and paste the URL here. Do not assert either way. |
+| **Devpost project** | **UNRESOLVED — recorded as permanently ambiguous (2026-07-24 post-event closure).** `bookmark.md` said "Not yet submitted"; MEMORY said submitted 2026-04-21; the conflict was never ruled on and the event has since concluded, so the owner action is CLOSED-UNRESOLVED (no longer actionable — a ruling would change nothing). Do not assert submission either way anywhere in this repo; the README banner defers to this cell. |
 | **Demo Video (2:18)** | https://youtu.be/40haMLuDOIk |
 | **Dashboard** | https://web-umber-alpha-41.vercel.app |
 | **MCP Server** | https://health-pulse-mcp-production.up.railway.app/mcp |
